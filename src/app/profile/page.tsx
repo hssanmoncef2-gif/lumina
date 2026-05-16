@@ -144,7 +144,7 @@ export default function ProfilePage() {
               { emoji: '📖', label: 'My Journal', href: '/journal' },
               { emoji: '✨', label: 'Replay Onboarding', href: '/onboarding' },
             ].map((item, i, arr) => (
-              <motion.button key={item.href} onClick={() => router.push(item.href)} whileTap={{ scale: 0.99 }}
+              <motion.button key={item.href} onClick={() => router.push(item.href as any)} whileTap={{ scale: 0.99 }}
                 className="w-full flex items-center gap-3 px-4 py-3.5 text-left"
                 style={{ borderBottom: i < arr.length - 1 ? '0.5px solid rgba(255,255,255,0.05)' : 'none' }}>
                 <span className="text-base">{item.emoji}</span>
