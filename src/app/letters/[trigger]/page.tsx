@@ -10,14 +10,19 @@ import LetterContent from '@/components/letters/LetterContent'
 import { LETTER_BY_TRIGGER } from '@/lib/letters/letterData'
 import type { LetterTrigger } from '@/types'
 
-interface Props { params: { trigger: string } }
+interface Props { params: Promise<{ trigger: string }> }
 
 export default function LetterViewPage({ params }: Props) {
   const router  = useRouter()
   const { data: session } = useSession()
-  const trigger = params.trigger as LetterTrigger
-  const letter  = LETTER_BY_TRIGGER[trigger]
+  const [trigger, setTrigger] = useState<LetterTrigger | null>(null)
   const [phase, setPhase] = useState<'sealed' | 'opening' | 'open'>('sealed')
+
+  useEffect(() => {
+    params.then(p => setTrigger(p.trigger as LetterTrigger))
+  }, [params])
+
+  const letter = trigger ? LETTER_BY_TRIGGER[trigger] : undefined
 
   useEffect(() => {
     if (!letter) return
