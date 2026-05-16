@@ -32,7 +32,7 @@ export default function BottomNav() {
           return (
             <button
               key={tab.href}
-              onClick={() => router.push(tab.href)}
+              onClick={() => router.push(tab.href as any)}
               className="nav-tab"
               style={{ opacity: isActive ? 1 : 0.4 }}
               aria-label={tab.label}
