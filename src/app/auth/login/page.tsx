@@ -1,20 +1,46 @@
 'use client'
 
+import { Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import AuthForm from '@/components/auth/AuthForm'
 
-export default function LoginPage() {
+function LoginContent() {
   const params = useSearchParams()
   const error = params.get('error')
 
+  return (
+    <>
+      {/* Auth card */}
+      <div
+        className="glass rounded-3xl p-6"
+        style={{ boxShadow: '0 8px 48px rgba(0,0,0,0.5), inset 0 0 0 0.5px rgba(255,255,255,0.07)' }}
+      >
+        <h2 className="text-white/80 font-medium text-base mb-5">Welcome back</h2>
+
+        {error && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-red-400/70 text-xs mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/15"
+          >
+            Couldn&apos;t sign you in. Please try again.
+          </motion.p>
+        )}
+
+        <AuthForm mode="login" />
+      </div>
+    </>
+  )
+}
+
+export default function LoginPage() {
   return (
     <main className="relative min-h-dvh flex flex-col items-center justify-center overflow-hidden bg-lumina-void px-6">
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none">
-        {/* Large purple orb */}
         <div
           className="absolute -top-32 left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full opacity-[0.12]"
           style={{
@@ -23,7 +49,6 @@ export default function LoginPage() {
             animation: 'orbPulse 12s ease-in-out infinite',
           }}
         />
-        {/* Pink orb */}
         <div
           className="absolute bottom-0 right-0 w-72 h-72 rounded-full opacity-[0.09]"
           style={{
@@ -31,7 +56,6 @@ export default function LoginPage() {
             filter: 'blur(50px)',
           }}
         />
-        {/* Blue orb */}
         <div
           className="absolute top-1/2 left-0 w-64 h-64 rounded-full opacity-[0.08]"
           style={{
@@ -41,15 +65,12 @@ export default function LoginPage() {
         />
       </div>
 
-      {/* Content */}
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
         className="relative z-10 w-full max-w-[360px] flex flex-col gap-8"
       >
-
-        {/* Logo / Wordmark */}
         <div className="text-center flex flex-col items-center gap-3">
           <motion.div
             animate={{ y: [0, -6, 0] }}
@@ -64,28 +85,10 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Auth card */}
-        <div
-          className="glass rounded-3xl p-6"
-          style={{ boxShadow: '0 8px 48px rgba(0,0,0,0.5), inset 0 0 0 0.5px rgba(255,255,255,0.07)' }}
-        >
-          <h2 className="text-white/80 font-medium text-base mb-5">Welcome back</h2>
+        <Suspense fallback={<div className="glass rounded-3xl p-6 h-40" />}>
+          <LoginContent />
+        </Suspense>
 
-          {/* Callback error */}
-          {error && (
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-red-400/70 text-xs mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/15"
-            >
-              Couldn&apos;t sign you in. Please try again.
-            </motion.p>
-          )}
-
-          <AuthForm mode="login" />
-        </div>
-
-        {/* Switch to signup */}
         <p className="text-center text-white/30 text-sm">
           New here?{' '}
           <Link href="/auth/signup" className="text-lumina-purple-dream hover:text-lumina-purple-soft transition-colors">
