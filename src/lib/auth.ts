@@ -58,3 +58,16 @@ export async function signOut() {
 export async function signInWithMagicLink(_email: string) {
   return { error: { message: 'Magic link is not available. Please use email + password.' } }
 }
+
+// ---- getUser (client-side session helper) ----
+import { getSession } from 'next-auth/react'
+
+export async function getUser() {
+  const session = await getSession()
+  if (!session?.user) return null
+  return {
+    id: (session.user as any).id as string,
+    email: session.user.email ?? '',
+    name: session.user.name ?? '',
+  }
+}
