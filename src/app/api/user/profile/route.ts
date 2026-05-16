@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
-import clientPromise from '@/lib/mongodb'
+import { connectDB } from '@/lib/mongodb/client'
+import mongoose from 'mongoose'
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions)
@@ -14,8 +15,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'displayName required' }, { status: 400 })
   }
 
-  const client = await clientPromise
-  const db = client.db()
+  await connectDB()
+  const db = mongoose.connection.db!
   await db.collection('user_profiles').updateOne(
     { email: session.user.email },
     { $set: { displayName, updatedAt: new Date() } },
