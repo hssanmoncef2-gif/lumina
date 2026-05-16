@@ -6,6 +6,7 @@
 
 import { useState, use } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import AtmosphericBackground from '@/components/layout/AtmosphericBackground'
 import FloatingParticles from '@/components/ui/FloatingParticles'
@@ -25,8 +26,9 @@ interface PageProps {
 export default function JournalEntryPage({ params }: PageProps) {
   const { id }       = use(params)
   const router       = useRouter()
+  const { data: session } = useSession()
   const currentMood  = useLuminaStore(s => s.currentMood)
-  const userId       = useLuminaStore(s => s.user?.id) ?? DEV_USER_ID
+  const userId       = (session?.user as any)?.id ?? useLuminaStore.getState().user?.id ?? DEV_USER_ID
 
   const [isEditing, setIsEditing] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)

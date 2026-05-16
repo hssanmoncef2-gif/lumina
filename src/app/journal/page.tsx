@@ -7,6 +7,7 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import AtmosphericBackground from '@/components/layout/AtmosphericBackground'
 import FloatingParticles from '@/components/ui/FloatingParticles'
 import BottomNav from '@/components/layout/BottomNav'
@@ -14,13 +15,13 @@ import JournalEntryCard from '@/components/journal/JournalEntryCard'
 import { useJournalEntries } from '@/hooks/useJournal'
 import { useLuminaStore } from '@/store/useAppStore'
 
-// Stub userId for development — Phase 5 will wire Supabase auth
 const DEV_USER_ID = 'dev-user'
 
 export default function JournalPage() {
   const router      = useRouter()
+  const { data: session } = useSession()
   const currentMood = useLuminaStore(s => s.currentMood)
-  const userId      = useLuminaStore(s => s.user?.id) ?? DEV_USER_ID
+  const userId      = (session?.user as any)?.id ?? useLuminaStore.getState().user?.id ?? DEV_USER_ID
   const [isReady, setIsReady] = useState(false)
   const [filter, setFilter]   = useState<'all' | 'favorites'>('all')
 
