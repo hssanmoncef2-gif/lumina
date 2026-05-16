@@ -28,7 +28,8 @@ export default function JournalEntryPage({ params }: PageProps) {
   const router       = useRouter()
   const { data: session } = useSession()
   const currentMood  = useLuminaStore(s => s.currentMood)
-  const userId       = (session?.user as any)?.id ?? useLuminaStore.getState().user?.id ?? DEV_USER_ID
+  const storeUser    = useLuminaStore(s => s.user)
+  const userId       = (session?.user as any)?.id ?? storeUser?.id ?? DEV_USER_ID
 
   const [isEditing, setIsEditing] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)

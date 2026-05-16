@@ -19,8 +19,9 @@ export default function NewJournalEntryPage() {
   const router      = useRouter()
   const { data: session } = useSession()
   const currentMood = useLuminaStore(s => s.currentMood)
+  const storeUser   = useLuminaStore(s => s.user)
   // Prefer real session userId, fall back to store, then dev fallback
-  const userId = (session?.user as any)?.id ?? useLuminaStore.getState().user?.id ?? DEV_USER_ID
+  const userId = (session?.user as any)?.id ?? storeUser?.id ?? DEV_USER_ID
 
   const { create, isSaving, error } = useCreateEntry(userId)
 
