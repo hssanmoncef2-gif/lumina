@@ -7,13 +7,14 @@ import { connectDB } from '@/lib/mongodb/client'
 import { JournalEntry } from '@/lib/models/JournalEntry'
 import mongoose from 'mongoose'
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const userId = req.nextUrl.searchParams.get('userId')
   if (!userId) return NextResponse.json({ error: 'userId required' }, { status: 400 })
 
   await connectDB()
   const entry = await JournalEntry.findOne({
-    _id:    new mongoose.Types.ObjectId(params.id),
+    _id:    new mongoose.Types.ObjectId(id),
     userId: new mongoose.Types.ObjectId(userId),
   }).lean()
 
@@ -21,7 +22,8 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   return NextResponse.json(entry)
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const { userId, title, content, mood, moodIntensity, tags, isFavorite, aiSummary } = await req.json()
   if (!userId) return NextResponse.json({ error: 'userId required' }, { status: 400 })
 
@@ -37,7 +39,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (aiSummary     !== undefined) patch.aiSummary     = aiSummary
 
   const entry = await JournalEntry.findOneAndUpdate(
-    { _id: new mongoose.Types.ObjectId(params.id), userId: new mongoose.Types.ObjectId(userId) },
+    { _id: new mongoose.Types.ObjectId(id), userId: new mongoose.Types.ObjectId(userId) },
     { $set: patch },
     { new: true }
   ).lean()
@@ -46,13 +48,14 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   return NextResponse.json(entry)
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const { userId } = await req.json()
   if (!userId) return NextResponse.json({ error: 'userId required' }, { status: 400 })
 
   await connectDB()
   await JournalEntry.deleteOne({
-    _id:    new mongoose.Types.ObjectId(params.id),
+    _id:    new mongoose.Types.ObjectId(id),
     userId: new mongoose.Types.ObjectId(userId),
   })
 
