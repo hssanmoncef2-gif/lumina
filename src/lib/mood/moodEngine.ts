@@ -6,14 +6,13 @@ import type { MoodId, QuizResult } from '@/types'
 import { COMFORT_MOODS, MOOD_DATA } from './moodData'
 
 export type QuizAnswers = {
-  q1?: string        // option id
-  q2?: number        // 0–100 slider (0=comfort, 100=energy)
-  q3?: string        // option id
-  q4?: string        // option id
-  q5?: string        // option id
+  q1?: string
+  q2?: number
+  q3?: string
+  q4?: string
+  q5?: string
 }
 
-// All quiz option weight maps (flattened for scoring)
 import { QUIZ_QUESTIONS } from './moodData'
 
 function getOptionWeights(optionId: string): Partial<Record<MoodId, number>> {
@@ -25,12 +24,9 @@ function getOptionWeights(optionId: string): Partial<Record<MoodId, number>> {
   return {}
 }
 
-// Slider converts to mood weights: low=comfort (calm/healing/soft), high=energy (alive/joyful)
 function sliderToWeights(value: number): Partial<Record<MoodId, number>> {
-  // value 0–100
-  const comfortScore = (100 - value) / 100   // 0–1
-  const energyScore  = value / 100            // 0–1
-
+  const comfortScore = (100 - value) / 100
+  const energyScore  = value / 100
   return {
     calm:    comfortScore * 2.5,
     soft:    comfortScore * 1.5,
@@ -40,20 +36,12 @@ function sliderToWeights(value: number): Partial<Record<MoodId, number>> {
   }
 }
 
-// ---- Main scoring function ----
 export function calculateMoodResult(answers: QuizAnswers): QuizResult {
   const scores: Record<MoodId, number> = {
-    calm:     0,
-    drifting: 0,
-    soft:     0,
-    alive:    0,
-    heavy:    0,
-    anxious:  0,
-    joyful:   0,
-    healing:  0,
+    calm: 0, drifting: 0, soft: 0, alive: 0,
+    heavy: 0, anxious: 0, joyful: 0, healing: 0,
   }
 
-  // Accumulate option weights
   for (const optionId of [answers.q1, answers.q3, answers.q4, answers.q5]) {
     if (!optionId) continue
     const weights = getOptionWeights(optionId)
@@ -64,7 +52,6 @@ export function calculateMoodResult(answers: QuizAnswers): QuizResult {
     }
   }
 
-  // Slider weights
   if (answers.q2 !== undefined) {
     const sliderWeights = sliderToWeights(answers.q2)
     for (const [moodId, weight] of Object.entries(sliderWeights)) {
@@ -74,18 +61,13 @@ export function calculateMoodResult(answers: QuizAnswers): QuizResult {
     }
   }
 
-  // Sort moods by score
-  const ranked = (Object.entries(scores) as [MoodId, number][])
-    .sort((a, b) => b[1] - a[1])
-
+  const ranked = (Object.entries(scores) as [MoodId, number][]).sort((a, b) => b[1] - a[1])
   const primaryMood   = ranked[0][0]
   const secondaryMood = ranked[1][1] > 0 ? ranked[1][0] : undefined
 
-  // Energy level from slider (1–5 scale)
   const sliderVal = answers.q2 ?? 50
   const energyLevel = Math.max(1, Math.min(5, Math.round(sliderVal / 20) + 1)) as 1|2|3|4|5
 
-  // Comfort need
   const needsComfort = COMFORT_MOODS.includes(primaryMood) ||
     (secondaryMood !== undefined && COMFORT_MOODS.includes(secondaryMood))
 
@@ -101,32 +83,22 @@ export function calculateMoodResult(answers: QuizAnswers): QuizResult {
   }
 }
 
-// ---- Save mood entry to Supabase ----
+// Mood save now goes through the Next.js API route instead of Supabase directly
 export async function saveMoodEntry({
-  userId,
   moodId,
   intensity,
   notes,
 }: {
-  userId: string
+  userId?: string
   moodId: MoodId
   intensity: 1|2|3|4|5
   notes?: string
 }) {
-  const { createClient } = await import('@/lib/supabase/client')
-  const supabase = createClient()
-
-  const { data, error } = await supabase
-    .from('mood_entries')
-    .insert({
-      user_id:   userId,
-      mood_id:   moodId,
-      intensity,
-      notes:     notes ?? null,
-      created_at: new Date().toISOString(),
-    })
-    .select()
-    .single()
-
-  return { data, error }
+  const res = await fetch('/api/mood', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ moodId, intensity, notes }),
+  })
+  const data = await res.json()
+  return { data, error: res.ok ? null : data }
 }
