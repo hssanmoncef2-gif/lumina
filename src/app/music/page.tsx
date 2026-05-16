@@ -9,7 +9,7 @@ import NowPlayingBar from '@/components/music/NowPlayingBar'
 import MusicPlayer from '@/components/music/MusicPlayer'
 import { usePlayer } from '@/hooks/usePlayer'
 import { useLuminaStore } from '@/store/useAppStore'
-import { PLAYLISTS } from '@/lib/music/playlistData'
+import { PLAYLISTS, MOOD_PLAYLIST_MAP } from '@/lib/music/playlistData'
 import type { Playlist } from '@/types'
 
 // ============================================================
@@ -18,11 +18,13 @@ import type { Playlist } from '@/types'
 
 const MOOD_FILTER_OPTIONS = [
   { id: 'all',     label: 'All',       emoji: '✨' },
-  { id: 'calm',    label: 'Calm',      emoji: '🌊' },
-  { id: 'alive',   label: 'Energy',    emoji: '⚡' },
+  { id: 'alive',   label: 'Energy',    emoji: '🔥' },
+  { id: 'joyful',  label: 'Joyful',    emoji: '🌟' },
+  { id: 'soft',    label: 'Soft',      emoji: '🌸' },
+  { id: 'drifting',label: 'Night',     emoji: '🌙' },
   { id: 'healing', label: 'Healing',   emoji: '🌿' },
-  { id: 'heavy',   label: 'Release',   emoji: '🌧️' },
-  { id: 'drifting',label: 'Drift',     emoji: '🌌' },
+  { id: 'heavy',   label: 'Release',   emoji: '🎸' },
+  { id: 'calm',    label: 'Calm',      emoji: '🌊' },
 ]
 
 export default function MusicPage() {
@@ -33,12 +35,12 @@ export default function MusicPage() {
   const [showPlayer, setShowPlayer] = useState(false)
   const [expandedPlaylist, setExpandedPlaylist] = useState<Playlist | null>(null)
 
-  // Filter playlists by selected mood
+  // Filter playlists by selected mood using MOOD_PLAYLIST_MAP
   const filteredPlaylists = moodFilter === 'all'
     ? PLAYLISTS
-    : PLAYLISTS.filter(pl =>
-        pl.tracks.some(t => t.mood.includes(moodFilter as any))
-      )
+    : (MOOD_PLAYLIST_MAP[moodFilter] ?? [])
+        .map(id => PLAYLISTS.find(p => p.id === id))
+        .filter(Boolean) as typeof PLAYLISTS
 
   // Detect active playlist
   const activePlaylistId = player.currentTrack

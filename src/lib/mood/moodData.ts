@@ -148,7 +148,7 @@ export const MOOD_DATA: Record<MoodId, {
     gradient: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #0c4a6e 100%)',
     accentColor: '#38bdf8',
     textColor: '#bae6fd',
-    musicCategory: 'ocean-calm',
+    musicCategory: 'rainy-tokyo',
     ambientMode: 'ocean-twilight',
     quoteCategory: ['rest', 'comfort'],
     particleIntensity: 'low',

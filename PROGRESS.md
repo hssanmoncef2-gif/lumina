@@ -1,6 +1,6 @@
 # LUMINA — Session Progress & Handoff
-**Current phase:** Phase 9 — Full free stack migration ✅ COMPLETE
-**Next phase:** Phase 10 — Mood quiz persistence, real audio, final polish
+**Current phase:** Phase 10 — Music section fixed ✅
+**Next phase:** Phase 10 continued — Quiz mood persistence, onboarding display name, rate limiting
 
 ---
 
@@ -14,41 +14,46 @@
 
 ---
 
-## What Changed in Phase 9
+## What Changed This Session
 
-### Removed completely
-- `@supabase/supabase-js`, `@supabase/ssr`, `@prisma/client`, `prisma`
-- `src/lib/supabase/` folder
-- `src/app/auth/callback/` route (Supabase magic link callback)
-- `supabase_setup.sql`
+### Music Section — Real Songs + Mood Mapping
 
-### Added
-- `mongoose` + `bcryptjs` + `next-auth` + `groq-sdk`
-- `src/lib/mongodb/client.ts` — DB connection singleton
-- `src/lib/models/User.ts` — User schema
-- `src/lib/models/JournalEntry.ts` — Journal schema
-- `src/lib/models/MoodEntry.ts` — Mood schema
-- `src/lib/models/LetterRead.ts` — Letter reads schema
-- `src/app/api/auth/[...nextauth]/route.ts` — NextAuth handler
-- `src/app/api/auth/signup/route.ts` — User registration
-- `src/app/api/journal/route.ts` — List + create journal entries
-- `src/app/api/journal/[id]/route.ts` — Get/update/delete single entry
-- `src/app/api/mood/route.ts` — Log + fetch mood entries
-- `src/app/api/letters/route.ts` — Track letter reads
-- `src/components/ui/Providers.tsx` — NextAuth SessionProvider wrapper
+**File changed:** `src/lib/music/playlistData.ts` (fully rewritten)
+**File changed:** `src/app/music/page.tsx` (filter logic + mood tabs updated)
+**File changed:** `src/lib/mood/moodData.ts` (calm mood musicCategory: ocean-calm → rainy-tokyo)
 
-### Updated
-- `src/lib/auth.ts` — Uses NextAuth signIn/signOut (no Supabase)
-- `src/lib/journal/journalService.ts` — Calls `/api/journal` routes
-- `src/hooks/useMoodHistory.ts` — Calls `/api/mood` (no Supabase)
-- `src/middleware.ts` — Uses NextAuth `withAuth` (no Supabase)
-- `src/app/layout.tsx` — Wraps app in `<Providers>` (SessionProvider)
-- `src/app/api/companion/route.ts` — Groq API (llama-3.3-70b)
-- `src/app/api/reflect/route.ts` — Groq API (llama-3.3-70b)
-- `src/app/profile/page.tsx` — Uses `useSession()` hook
-- `src/app/letters/page.tsx` — Uses `useSession()` hook
-- `src/app/letters/[trigger]/page.tsx` — Uses `useSession()` hook
-- `.env.example` — Only 3 vars: MONGODB_URI, NEXTAUTH_SECRET, NEXTAUTH_URL, GROQ_API_KEY
+#### New playlists (9 total, replacing 10 mock ones):
+| Playlist ID | Category | Mood Tags | Artists |
+|-------------|----------|-----------|---------|
+| pl-arabic-fire | confidence | alive, joyful | Myriam Fares, Nancy Ajram, Lamis Kan, Hind Ziadi |
+| pl-arabic-soft | comfort | soft, healing, calm | Yara, Nour Helou, Carole Samaha, Sherine, Nancy Ajram |
+| pl-arabic-nights | dreamy-nights | drifting, heavy, soft | Najwa Karam, Haifa Wehbe, Ahlam, Nawal Al Zoghbi |
+| pl-arabic-healing | healing | healing, soft, alive | Ruby, Nancy Ajram, Maya Diab, Myriam Fares |
+| pl-britney | motivation | alive, joyful, soft, heavy | Britney Spears |
+| pl-bruno | lo-fi-morning | joyful, alive, soft, healing | Bruno Mars |
+| pl-dystinct | confidence | alive, joyful, drifting, soft | DYSTINCT |
+| pl-french-drift | rainy-tokyo | soft, drifting, calm, joyful | bba, Linh, Louane, ROSALÍA, Ridsa, Vitaa, etc. |
+| pl-queen | emotional-release | heavy, healing, alive | Queen |
+
+#### MOOD_PLAYLIST_MAP (new export):
+```ts
+alive:    ['pl-arabic-fire', 'pl-britney', 'pl-dystinct', 'pl-bruno']
+joyful:   ['pl-bruno', 'pl-arabic-fire', 'pl-britney']
+calm:     ['pl-french-drift', 'pl-arabic-soft']
+soft:     ['pl-arabic-soft', 'pl-french-drift', 'pl-arabic-healing']
+drifting: ['pl-arabic-nights', 'pl-french-drift']
+heavy:    ['pl-queen', 'pl-arabic-nights', 'pl-arabic-healing']
+anxious:  ['pl-arabic-soft', 'pl-french-drift']
+healing:  ['pl-arabic-healing', 'pl-queen', 'pl-arabic-soft']
+```
+
+#### Mood filter tabs updated:
+All → Energy(🔥) → Joyful(🌟) → Soft(🌸) → Night(🌙) → Healing(🌿) → Release(🎸) → Calm(🌊)
+
+#### Audio src:
+All `src: ''` for now — player handles this gracefully (simulates progress).
+To add real audio: put mp3 files in `public/sounds/` and set `src: '/sounds/filename.mp3'` per track.
+No YouTube/streaming integration yet (would need a separate embed approach).
 
 ---
 
@@ -63,25 +68,24 @@ GROQ_API_KEY=gsk_...
 ---
 
 ## What's Left for Phase 10
-- Quiz page: call `logMood(userId, moodId)` after quiz completion (import from `useMoodHistory`)
-- Onboarding: save display name to MongoDB user profile
-- Real ambient audio files in `public/sounds/`
-- Rate limiting on `/api/companion` (e.g. 20 requests/day)
-- PWA icons generation
-- Accessibility: skip-to-main link, aria-labels audit
+- [ ] Quiz page: call `logMood(userId, moodId)` after quiz completion
+- [ ] Onboarding: save display name to MongoDB user profile
+- [ ] Rate limiting on `/api/companion` (e.g. 20 requests/day)
+- [ ] PWA icons generation
+- [ ] Accessibility: skip-to-main link, aria-labels audit
+- [ ] (Optional) Real mp3 files in `public/sounds/` — filenames should match track titles
 
 ---
 
 ## How to Continue
 1. Upload PROGRESS.md + zip
-2. Say: "Continue Lumina from Phase 10."
+2. Say which Phase 10 item to tackle next.
 
 ## Local setup
 ```bash
-cd lumina
+cd lumina-main
 npm install
 cp .env.example .env.local
 # fill in the 4 env vars
 npm run dev
 ```
-See DEPLOY.md for full deployment guide.

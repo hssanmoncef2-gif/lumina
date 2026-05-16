@@ -1,197 +1,254 @@
 // ============================================================
-// LUMINA — Playlist Data (Phase 5)
-// Static definitions for 10 categories with mock tracks
+// LUMINA — Playlist Data (Phase 10 — Real Songs)
+// Real tracks from user's library, mapped to moods
+// src: YouTube link (placeholder until local files added)
 // ============================================================
 
 import type { Playlist, Track, MusicCategory } from '@/types'
 
-// ---- Mock Tracks by category ----
+function mk(
+  id: string,
+  title: string,
+  artist: string,
+  category: MusicCategory,
+  duration: number,
+  mood: string[],
+  bpm: number,
+): Track {
+  return { id, title, artist, category, duration, src: '', mood: mood as any, bpm }
+}
 
-const RAINY_TOKYO_TRACKS: Track[] = [
-  { id: 'rt-01', title: 'Neon Reflections',       artist: 'Lumina Radio', category: 'rainy-tokyo',       duration: 214, src: '', mood: ['calm', 'drifting'], bpm: 75 },
-  { id: 'rt-02', title: 'Late Night Convenience',  artist: 'Lumina Radio', category: 'rainy-tokyo',       duration: 192, src: '', mood: ['drifting', 'calm'],   bpm: 72 },
-  { id: 'rt-03', title: 'Soft Rain on Glass',      artist: 'Lumina Radio', category: 'rainy-tokyo',       duration: 248, src: '', mood: ['calm'],              bpm: 68 },
-  { id: 'rt-04', title: 'Shibuya at 2AM',          artist: 'Lumina Radio', category: 'rainy-tokyo',       duration: 237, src: '', mood: ['drifting'],          bpm: 70 },
-  { id: 'rt-05', title: 'Umbrella Blues',          artist: 'Lumina Radio', category: 'rainy-tokyo',       duration: 203, src: '', mood: ['heavy', 'calm'],     bpm: 65 },
+// ---- ARABIC POP: Alive / Joyful / High Energy ----
+const ARABIC_FIRE: Track[] = [
+  mk('ap-01', "Am Bemzah Ma'ak (عم بمزح معك)", 'Najwa Karam',    'confidence', 225, ['alive', 'joyful'],  108),
+  mk('ap-02', 'Degou El Toboul (دقوا الطبول)',  'Myriam Fares',   'confidence', 210, ['alive', 'joyful'],  115),
+  mk('ap-03', 'Haklek Rahtak (حقلق راحتك)',     'Myriam Fares',   'confidence', 198, ['alive', 'joyful'],  112),
+  mk('ap-04', 'Maalesh',                         'Myriam Fares',   'confidence', 204, ['alive', 'joyful'],  110),
+  mk('ap-05', 'Atlah',                            'Myriam Fares',   'confidence', 217, ['alive', 'joyful'],  118),
+  mk('ap-06', 'Boom Boom',                        'Hind Ziadi',     'confidence', 190, ['alive', 'joyful'],  120),
+  mk('ap-07', 'Mesaytara (مسيطرة)',              'Lamis Kan',      'confidence', 208, ['alive', 'joyful'],  114),
+  mk('ap-08', 'Motamakkina (متمكنه)',             'Lamis Kan',      'confidence', 215, ['alive', 'joyful'],  112),
+  mk('ap-09', "Enta Bet'oul Eih",                'Myriam Fares',   'confidence', 222, ['alive', 'joyful'],  108),
+  mk('ap-10', 'Badna Nwalee El Jaw',             'Nancy Ajram',    'confidence', 200, ['alive', 'joyful'],  116),
 ]
 
-const OCEAN_CALM_TRACKS: Track[] = [
-  { id: 'oc-01', title: 'Tidepools at Dusk',       artist: 'Lumina Radio', category: 'ocean-calm',        duration: 280, src: '', mood: ['calm', 'soft'],      bpm: 60 },
-  { id: 'oc-02', title: 'Wading In',               artist: 'Lumina Radio', category: 'ocean-calm',        duration: 221, src: '', mood: ['healing', 'calm'],   bpm: 58 },
-  { id: 'oc-03', title: 'The Deep Blue Hour',      artist: 'Lumina Radio', category: 'ocean-calm',        duration: 310, src: '', mood: ['drifting'],          bpm: 55 },
-  { id: 'oc-04', title: 'Salt Air Morning',        artist: 'Lumina Radio', category: 'ocean-calm',        duration: 196, src: '', mood: ['soft', 'joyful'],    bpm: 62 },
-  { id: 'oc-05', title: 'Undertow Meditation',     artist: 'Lumina Radio', category: 'ocean-calm',        duration: 345, src: '', mood: ['calm', 'healing'],   bpm: 52 },
+// ---- ARABIC POP: Soft / Comfort ----
+const ARABIC_SOFT: Track[] = [
+  mk('as-01', 'Sho Baddo (شو بدو)',              'Yara',           'comfort', 228, ['soft', 'healing'],   78),
+  mk('as-02', 'Ma Yhimmak',                       'Yara',           'comfort', 215, ['soft', 'calm'],      75),
+  mk('as-03', 'Shey Ghareeb (شي غريب)',           'Nour Helou',     'comfort', 232, ['soft', 'drifting'],  72),
+  mk('as-04', 'Ma Tegi Hena',                     'Nancy Ajram',    'comfort', 218, ['soft', 'calm'],      76),
+  mk("as-05", "Tla'ayna",                         'Maritta Hallani','comfort', 225, ['soft', 'healing'],   74),
+  mk('as-06', "Esma'ny",                          'Carole Samaha',  'comfort', 242, ['soft', 'healing'],   70),
+  mk('as-07', 'Ettala Fia',                       'Carole Samaha',  'comfort', 236, ['soft', 'calm'],      73),
+  mk('as-08', 'Eh Eh',                            'Sherine',        'comfort', 210, ['soft', 'joyful'],    80),
+  mk('as-09', 'Howa Da',                          'Sherine',        'comfort', 220, ['soft', 'healing'],   76),
+  mk('as-10', 'Lawn Ouyounak',                    'Nancy Ajram',    'comfort', 235, ['soft', 'calm'],      72),
 ]
 
-const DREAMY_NIGHTS_TRACKS: Track[] = [
-  { id: 'dn-01', title: 'Moonlit Séance',          artist: 'Lumina Radio', category: 'dreamy-nights',     duration: 258, src: '', mood: ['drifting', 'soft'],  bpm: 70 },
-  { id: 'dn-02', title: 'Starfall Lullaby',        artist: 'Lumina Radio', category: 'dreamy-nights',     duration: 230, src: '', mood: ['calm'],              bpm: 63 },
-  { id: 'dn-03', title: 'Lucid Hours',             artist: 'Lumina Radio', category: 'dreamy-nights',     duration: 290, src: '', mood: ['soft', 'drifting'], bpm: 67 },
-  { id: 'dn-04', title: 'Between Worlds',          artist: 'Lumina Radio', category: 'dreamy-nights',     duration: 276, src: '', mood: ['drifting'],          bpm: 65 },
-  { id: 'dn-05', title: 'Cloud Nine Chorus',       artist: 'Lumina Radio', category: 'dreamy-nights',     duration: 215, src: '', mood: ['soft', 'joyful'],   bpm: 72 },
+// ---- ARABIC POP: Drifting / Late Night ----
+const ARABIC_NIGHTS: Track[] = [
+  mk('an-01', 'Khalini Shoufak (خليني شوفك)',    'Najwa Karam',    'dreamy-nights', 258, ['drifting', 'soft'],   68),
+  mk('an-02', 'Allah Yeshghelo Balo (الله يشغلو بالو)', 'Najwa Karam', 'dreamy-nights', 245, ['drifting', 'heavy'], 65),
+  mk('an-03', 'Ma Fi Noum (ما في نوم)',           'Najwa Karam',    'dreamy-nights', 262, ['drifting', 'heavy'],  66),
+  mk('an-04', 'Eidak (ايدك)',                     'Najwa Karam',    'dreamy-nights', 248, ['drifting', 'soft'],   70),
+  mk("an-05", "Ta'a Khabyak (تعا خبيك)",         'Najwa Karam',    'dreamy-nights', 255, ['drifting', 'heavy'],  64),
+  mk('an-06', 'Fakerne',                          'Haifa Wehbe',    'dreamy-nights', 240, ['drifting', 'heavy'],  67),
+  mk('an-07', 'Enta Tani',                        'Haifa Wehbe',    'dreamy-nights', 235, ['drifting', 'soft'],   69),
+  mk('an-08', 'El Wawa (الواوا)',                 'Haifa Wehbe',    'dreamy-nights', 228, ['drifting', 'joyful'], 78),
+  mk('an-09', 'Rajab',                            'Haifa Wehbe',    'dreamy-nights', 232, ['drifting', 'alive'],  82),
+  mk('an-10', 'Talqa (طلقه)',                     'Ahlam',          'dreamy-nights', 250, ['drifting', 'heavy'],  65),
+  mk('an-11', 'Alf W Meya',                       'Nawal Al Zoghbi','dreamy-nights', 252, ['drifting', 'healing'],68),
 ]
 
-const HEALING_TRACKS: Track[] = [
-  { id: 'hl-01', title: 'Letting It Be',           artist: 'Lumina Radio', category: 'healing',           duration: 320, src: '', mood: ['healing', 'heavy'], bpm: 58 },
-  { id: 'hl-02', title: 'The Tenderness Frequency',artist: 'Lumina Radio', category: 'healing',           duration: 288, src: '', mood: ['healing', 'soft'],  bpm: 60 },
-  { id: 'hl-03', title: 'A Gentle Return',         artist: 'Lumina Radio', category: 'healing',           duration: 264, src: '', mood: ['healing'],          bpm: 56 },
-  { id: 'hl-04', title: 'Held',                    artist: 'Lumina Radio', category: 'healing',           duration: 298, src: '', mood: ['healing', 'heavy'], bpm: 55 },
-  { id: 'hl-05', title: 'Permission to Rest',      artist: 'Lumina Radio', category: 'healing',           duration: 340, src: '', mood: ['calm', 'healing'],  bpm: 52 },
+// ---- ARABIC POP: Healing / Emotional ----
+const ARABIC_HEALING: Track[] = [
+  mk('ah-01', 'Namet Nenna',                      'Ruby',           'healing', 230, ['healing', 'soft'],     72),
+  mk('ah-02', 'Alby Plastic',                     'Ruby',           'healing', 215, ['healing', 'alive'],    88),
+  mk('ah-03', "3 Sa'at Metwasla",                 'Ruby',           'healing', 240, ['healing', 'drifting'], 70),
+  mk('ah-04', 'Hetta Tanya',                      'Ruby',           'healing', 225, ['healing', 'soft'],     74),
+  mk('ah-05', 'Ya Tabtab Wa Dallaa',              'Nancy Ajram',    'healing', 245, ['healing', 'joyful'],   76),
+  mk('ah-06', 'Ah W Noss',                        'Nancy Ajram',    'healing', 220, ['healing', 'soft'],     73),
+  mk('ah-07', 'Aktar Shewaya',                    'Maya Diab',      'healing', 218, ['healing', 'soft'],     76),
+  mk('ah-08', 'Khalani',                          'Myriam Fares',   'healing', 208, ['healing', 'alive'],    86),
 ]
 
-const MOTIVATION_TRACKS: Track[] = [
-  { id: 'mo-01', title: 'Electric Dawn',           artist: 'Lumina Radio', category: 'motivation',        duration: 195, src: '', mood: ['alive'],            bpm: 110 },
-  { id: 'mo-02', title: 'Climb Higher',            artist: 'Lumina Radio', category: 'motivation',        duration: 188, src: '', mood: ['alive', 'joyful'], bpm: 118 },
-  { id: 'mo-03', title: 'Zero to Luminous',        artist: 'Lumina Radio', category: 'motivation',        duration: 210, src: '', mood: ['alive'],            bpm: 115 },
-  { id: 'mo-04', title: 'The Upgrade',             artist: 'Lumina Radio', category: 'motivation',        duration: 200, src: '', mood: ['alive', 'joyful'], bpm: 120 },
-  { id: 'mo-05', title: 'Ignition Protocol',       artist: 'Lumina Radio', category: 'motivation',        duration: 178, src: '', mood: ['alive'],            bpm: 125 },
+// ---- BRITNEY SPEARS: Energy ----
+const BRITNEY_ENERGY: Track[] = [
+  mk('bp-01', '...Baby One More Time',            'Britney Spears', 'motivation', 211, ['alive', 'joyful'],  96),
+  mk('bp-02', "Oops!... I Did It Again",          'Britney Spears', 'motivation', 204, ['alive', 'joyful'],  95),
+  mk('bp-03', 'Toxic',                            'Britney Spears', 'motivation', 198, ['alive'],            143),
+  mk('bp-04', 'Gimme More',                       'Britney Spears', 'motivation', 240, ['alive'],            120),
+  mk('bp-05', 'Womanizer',                        'Britney Spears', 'motivation', 216, ['alive', 'joyful'],  130),
+  mk('bp-06', 'Hold It Against Me',               'Britney Spears', 'motivation', 228, ['alive'],            128),
+  mk('bp-07', 'Till the World Ends',              'Britney Spears', 'motivation', 234, ['alive', 'joyful'],  130),
+  mk('bp-08', 'Work Bitch',                       'Britney Spears', 'motivation', 222, ['alive'],            135),
+  mk('bp-09', 'Criminal',                         'Britney Spears', 'motivation', 225, ['drifting', 'soft'], 80),
+  mk('bp-10', 'Everytime',                        'Britney Spears', 'motivation', 238, ['heavy', 'soft'],    70),
 ]
 
-const COMFORT_TRACKS: Track[] = [
-  { id: 'co-01', title: 'Weighted Blanket World',  artist: 'Lumina Radio', category: 'comfort',           duration: 302, src: '', mood: ['soft', 'calm'],     bpm: 62 },
-  { id: 'co-02', title: 'You Are Enough',          artist: 'Lumina Radio', category: 'comfort',           duration: 265, src: '', mood: ['healing', 'soft'],  bpm: 58 },
-  { id: 'co-03', title: 'Hug From the Universe',  artist: 'Lumina Radio', category: 'comfort',           duration: 284, src: '', mood: ['soft'],             bpm: 60 },
-  { id: 'co-04', title: 'Safe Harbor',             artist: 'Lumina Radio', category: 'comfort',           duration: 317, src: '', mood: ['calm', 'soft'],     bpm: 55 },
-  { id: 'co-05', title: 'The Long Exhale',         artist: 'Lumina Radio', category: 'comfort',           duration: 330, src: '', mood: ['calm'],             bpm: 52 },
+// ---- BRUNO MARS: Joyful / Groovy ----
+const BRUNO_GROOVES: Track[] = [
+  mk('bm-01', "That's What I Like",               'Bruno Mars',     'lo-fi-morning', 206, ['joyful', 'alive'],  113),
+  mk('bm-02', 'Treasure',                          'Bruno Mars',     'lo-fi-morning', 173, ['joyful', 'alive'],  108),
+  mk('bm-03', 'Uptown Funk',                       'Bruno Mars',     'lo-fi-morning', 270, ['joyful', 'alive'],  115),
+  mk('bm-04', 'Grenade',                           'Bruno Mars',     'lo-fi-morning', 222, ['heavy', 'healing'], 92),
+  mk('bm-05', 'Just the Way You Are',              'Bruno Mars',     'lo-fi-morning', 220, ['soft', 'joyful'],   109),
+  mk('bm-06', 'Count On Me',                       'Bruno Mars',     'lo-fi-morning', 193, ['soft', 'healing'],  96),
+  mk('bm-07', 'Locked Out of Heaven',              'Bruno Mars',     'lo-fi-morning', 233, ['joyful', 'alive'],  144),
+  mk('bm-08', 'Versace on the Floor',              'Bruno Mars',     'lo-fi-morning', 274, ['soft', 'drifting'],  80),
 ]
 
-const LO_FI_TRACKS: Track[] = [
-  { id: 'lf-01', title: 'Morning Pages',           artist: 'Lumina Radio', category: 'lo-fi-morning',     duration: 220, src: '', mood: ['calm', 'soft'],     bpm: 78 },
-  { id: 'lf-02', title: 'Notebook & Chai',         artist: 'Lumina Radio', category: 'lo-fi-morning',     duration: 198, src: '', mood: ['calm'],             bpm: 80 },
-  { id: 'lf-03', title: 'Study Hall Ghosts',       artist: 'Lumina Radio', category: 'lo-fi-morning',     duration: 245, src: '', mood: ['drifting', 'calm'], bpm: 75 },
-  { id: 'lf-04', title: 'Pencil Scratches',        artist: 'Lumina Radio', category: 'lo-fi-morning',     duration: 212, src: '', mood: ['calm'],             bpm: 82 },
-  { id: 'lf-05', title: 'Warm Window Light',       artist: 'Lumina Radio', category: 'lo-fi-morning',     duration: 228, src: '', mood: ['soft', 'joyful'],   bpm: 77 },
+// ---- DYSTINCT: Arabic Trap ----
+const DYSTINCT_TRACKS: Track[] = [
+  mk('dy-01', 'BABABA WORLD',                      'DYSTINCT',       'confidence', 188, ['alive', 'joyful'],   128),
+  mk('dy-02', 'Business (feat. Naza)',              'DYSTINCT',       'confidence', 195, ['alive'],             122),
+  mk('dy-03', 'LAYALI',                             'DYSTINCT',       'confidence', 202, ['drifting', 'alive'],  98),
+  mk('dy-04', 'Tek Tek (feat. MHD)',                'DYSTINCT',       'confidence', 191, ['alive', 'joyful'],   126),
+  mk('dy-05', 'YAMA',                               'DYSTINCT',       'confidence', 198, ['alive', 'soft'],     105),
 ]
 
-const CELESTIAL_TRACKS: Track[] = [
-  { id: 'ca-01', title: 'Event Horizon Waltz',     artist: 'Lumina Radio', category: 'celestial-ambient', duration: 380, src: '', mood: ['drifting', 'calm'], bpm: 50 },
-  { id: 'ca-02', title: 'Nebula Serenade',         artist: 'Lumina Radio', category: 'celestial-ambient', duration: 420, src: '', mood: ['drifting'],         bpm: 48 },
-  { id: 'ca-03', title: 'Void Bloom',              artist: 'Lumina Radio', category: 'celestial-ambient', duration: 365, src: '', mood: ['calm', 'soft'],     bpm: 52 },
-  { id: 'ca-04', title: 'Photon Rain',             artist: 'Lumina Radio', category: 'celestial-ambient', duration: 395, src: '', mood: ['drifting'],         bpm: 46 },
-  { id: 'ca-05', title: 'The Expanding Silence',   artist: 'Lumina Radio', category: 'celestial-ambient', duration: 450, src: '', mood: ['calm'],             bpm: 44 },
+// ---- FRENCH / INTERNATIONAL: Soft / Atmospheric ----
+const FRENCH_VIBES: Track[] = [
+  mk('fr-01', 'Petite Maison',                      'bba',            'rainy-tokyo', 210, ['soft', 'drifting'],  72),
+  mk('fr-02', "J'avoue",                            'Linh',           'rainy-tokyo', 225, ['soft', 'calm'],      75),
+  mk('fr-03', 'Les Mots',                           'Lolo Zouaï & Dinos', 'rainy-tokyo', 238, ['drifting', 'soft'], 78),
+  mk('fr-04', 'Conduire',                           'Louane',         'rainy-tokyo', 220, ['soft', 'healing'],   70),
+  mk('fr-05', 'ça pik un peu quand même',           'miki',           'rainy-tokyo', 195, ['soft', 'drifting'],  82),
+  mk('fr-06', 'coeur maladroit',                    'Marine',         'rainy-tokyo', 215, ['heavy', 'soft'],     68),
+  mk('fr-07', 'la boss',                            'marguerite',     'rainy-tokyo', 200, ['joyful', 'alive'],   92),
+  mk('fr-08', 'Pour en parler',                     'Lynda & Franglish', 'rainy-tokyo', 228, ['soft', 'healing'], 76),
+  mk('fr-09', 'Viens on essaie',                    'Vitaa & Julien Doré', 'rainy-tokyo', 242, ['soft', 'calm'], 73),
+  mk('fr-10', 'Verano',                             'Ridsa',          'rainy-tokyo', 210, ['joyful', 'alive'],   96),
+  mk('fr-11', 'TKN',                                'ROSALÍA & Travis Scott', 'rainy-tokyo', 178, ['alive', 'joyful'], 138),
 ]
 
-const EMOTIONAL_RELEASE_TRACKS: Track[] = [
-  { id: 'er-01', title: 'Let It Rain',             artist: 'Lumina Radio', category: 'emotional-release', duration: 255, src: '', mood: ['heavy', 'healing'], bpm: 65 },
-  { id: 'er-02', title: 'The Breakdown Ballad',    artist: 'Lumina Radio', category: 'emotional-release', duration: 270, src: '', mood: ['heavy'],            bpm: 70 },
-  { id: 'er-03', title: 'Catharsis Sequence',      artist: 'Lumina Radio', category: 'emotional-release', duration: 230, src: '', mood: ['heavy', 'anxious'],bpm: 80 },
-  { id: 'er-04', title: 'Sob Gently',              artist: 'Lumina Radio', category: 'emotional-release', duration: 290, src: '', mood: ['heavy', 'healing'], bpm: 62 },
-  { id: 'er-05', title: 'After the Storm',         artist: 'Lumina Radio', category: 'emotional-release', duration: 305, src: '', mood: ['healing', 'heavy'], bpm: 60 },
+// ---- QUEEN / CLASSICS: Cathartic / Epic ----
+const QUEEN_CATHARSIS: Track[] = [
+  mk('cl-01', 'Bohemian Rhapsody',                  'Queen',          'emotional-release', 354, ['heavy', 'healing', 'alive'], 72),
+  mk('cl-02', "Don't Stop Me Now",                  'Queen',          'emotional-release', 209, ['alive', 'joyful'],  156),
+  mk('cl-03', 'We Will Rock You',                   'Queen',          'emotional-release', 121, ['alive'],            82),
+  mk('cl-04', 'We Are the Champions',               'Queen',          'emotional-release', 179, ['alive', 'healing'], 60),
+  mk('cl-05', 'Under Pressure',                     'Queen',          'emotional-release', 248, ['heavy', 'healing'], 116),
+  mk('cl-06', 'Somebody to Love',                   'Queen',          'emotional-release', 276, ['heavy', 'healing'], 76),
+  mk('cl-07', 'Radio Ga Ga',                        'Queen',          'emotional-release', 344, ['alive', 'drifting'], 118),
+  mk('cl-08', 'I Want to Break Free',               'Queen',          'emotional-release', 259, ['alive', 'joyful'],  120),
+  mk('cl-09', 'The Show Must Go On',                'Queen',          'emotional-release', 262, ['heavy', 'alive'],   63),
 ]
 
-const CONFIDENCE_TRACKS: Track[] = [
-  { id: 'cf-01', title: 'Main Character Energy',   artist: 'Lumina Radio', category: 'confidence',        duration: 185, src: '', mood: ['alive', 'joyful'], bpm: 105 },
-  { id: 'cf-02', title: 'Walk Tall',               artist: 'Lumina Radio', category: 'confidence',        duration: 200, src: '', mood: ['alive'],           bpm: 100 },
-  { id: 'cf-03', title: 'Glass Ceiling Shatter',   artist: 'Lumina Radio', category: 'confidence',        duration: 195, src: '', mood: ['alive', 'joyful'], bpm: 108 },
-  { id: 'cf-04', title: 'I Belong Here',           artist: 'Lumina Radio', category: 'confidence',        duration: 220, src: '', mood: ['joyful'],          bpm: 96 },
-  { id: 'cf-05', title: 'Unbothered',              artist: 'Lumina Radio', category: 'confidence',        duration: 210, src: '', mood: ['alive', 'calm'],   bpm: 102 },
-]
-
-// ---- Playlists ----
+// ============================================================
+// PLAYLISTS
+// ============================================================
 
 export const PLAYLISTS: Playlist[] = [
   {
-    id: 'pl-rainy-tokyo',
-    category: 'rainy-tokyo',
-    title: 'Rainy Tokyo',
-    description: 'Neon puddles, late-night trains, and the hush of rain on glass.',
-    emoji: '🌧️',
-    gradient: 'linear-gradient(135deg, rgba(99,102,241,0.45) 0%, rgba(59,130,246,0.35) 100%)',
-    tracks: RAINY_TOKYO_TRACKS,
+    id: 'pl-arabic-fire',
+    category: 'confidence',
+    title: 'Arabic Fire 🔥',
+    description: 'High-energy Arabic pop to ignite your night. Myriam, Nancy, the legends.',
+    emoji: '🔥',
+    gradient: 'linear-gradient(135deg, rgba(239,68,68,0.45) 0%, rgba(245,158,11,0.4) 100%)',
+    tracks: ARABIC_FIRE,
   },
   {
-    id: 'pl-ocean-calm',
-    category: 'ocean-calm',
-    title: 'Ocean Calm',
-    description: 'Salt air, deep waves, and the rhythm of the tide.',
-    emoji: '🌊',
-    gradient: 'linear-gradient(135deg, rgba(6,182,212,0.45) 0%, rgba(59,130,246,0.35) 100%)',
-    tracks: OCEAN_CALM_TRACKS,
+    id: 'pl-arabic-soft',
+    category: 'comfort',
+    title: 'Arabic Soft 🌸',
+    description: 'Tender voices and warm melodies. Let yourself be held by sound.',
+    emoji: '🌸',
+    gradient: 'linear-gradient(135deg, rgba(236,72,153,0.35) 0%, rgba(196,181,253,0.35) 100%)',
+    tracks: ARABIC_SOFT,
   },
   {
-    id: 'pl-dreamy-nights',
+    id: 'pl-arabic-nights',
     category: 'dreamy-nights',
-    title: 'Dreamy Nights',
-    description: 'Velvet skies, starlight, and soft lucid wandering.',
-    emoji: '✨',
-    gradient: 'linear-gradient(135deg, rgba(139,92,246,0.45) 0%, rgba(236,72,153,0.35) 100%)',
-    tracks: DREAMY_NIGHTS_TRACKS,
+    title: 'Arabic Nights 🌙',
+    description: 'Late nights and longing hearts. Najwa, Haifa, Ahlam.',
+    emoji: '🌙',
+    gradient: 'linear-gradient(135deg, rgba(139,92,246,0.45) 0%, rgba(30,27,75,0.6) 100%)',
+    tracks: ARABIC_NIGHTS,
   },
   {
-    id: 'pl-healing',
+    id: 'pl-arabic-healing',
     category: 'healing',
-    title: 'Healing Space',
-    description: 'Gentle frequencies to soothe and slowly piece things back together.',
+    title: 'Arabic Healing 🌿',
+    description: 'Ruby, Nancy, and friends — songs that understand your heart.',
     emoji: '🌿',
     gradient: 'linear-gradient(135deg, rgba(34,197,94,0.35) 0%, rgba(6,182,212,0.35) 100%)',
-    tracks: HEALING_TRACKS,
+    tracks: ARABIC_HEALING,
   },
   {
-    id: 'pl-motivation',
+    id: 'pl-britney',
     category: 'motivation',
-    title: 'Ignition',
-    description: 'Electric energy to light the fire that was always inside you.',
+    title: 'Britney Era ⚡',
+    description: 'Early 2000s pop energy. Iconic, unapologetic, electric.',
     emoji: '⚡',
-    gradient: 'linear-gradient(135deg, rgba(234,179,8,0.45) 0%, rgba(249,115,22,0.35) 100%)',
-    tracks: MOTIVATION_TRACKS,
+    gradient: 'linear-gradient(135deg, rgba(234,179,8,0.45) 0%, rgba(249,115,22,0.4) 100%)',
+    tracks: BRITNEY_ENERGY,
   },
   {
-    id: 'pl-comfort',
-    category: 'comfort',
-    title: 'Soft Comfort',
-    description: 'Like being wrapped in something warm that says: you\'re okay.',
-    emoji: '🤍',
-    gradient: 'linear-gradient(135deg, rgba(236,72,153,0.35) 0%, rgba(196,181,253,0.35) 100%)',
-    tracks: COMFORT_TRACKS,
-  },
-  {
-    id: 'pl-lo-fi',
+    id: 'pl-bruno',
     category: 'lo-fi-morning',
-    title: 'Lo-Fi Morning',
-    description: 'Coffee breath, notebook pages, and the quiet hum of focus.',
-    emoji: '☕',
-    gradient: 'linear-gradient(135deg, rgba(251,191,36,0.35) 0%, rgba(249,115,22,0.25) 100%)',
-    tracks: LO_FI_TRACKS,
+    title: 'Bruno Vibes 🌟',
+    description: 'Smooth, feel-good grooves for when life deserves a soundtrack.',
+    emoji: '🌟',
+    gradient: 'linear-gradient(135deg, rgba(251,191,36,0.35) 0%, rgba(234,179,8,0.3) 100%)',
+    tracks: BRUNO_GROOVES,
   },
   {
-    id: 'pl-celestial',
-    category: 'celestial-ambient',
-    title: 'Celestial',
-    description: 'Drift through galaxies and dissolve into quiet cosmic sound.',
-    emoji: '🌌',
-    gradient: 'linear-gradient(135deg, rgba(79,70,229,0.5) 0%, rgba(139,92,246,0.4) 50%, rgba(30,27,75,0.5) 100%)',
-    tracks: CELESTIAL_TRACKS,
-  },
-  {
-    id: 'pl-emotional-release',
-    category: 'emotional-release',
-    title: 'Emotional Release',
-    description: 'For when you need to feel it fully, and then let it go.',
-    emoji: '🌧️',
-    gradient: 'linear-gradient(135deg, rgba(99,102,241,0.45) 0%, rgba(139,92,246,0.4) 100%)',
-    tracks: EMOTIONAL_RELEASE_TRACKS,
-  },
-  {
-    id: 'pl-confidence',
+    id: 'pl-dystinct',
     category: 'confidence',
-    title: 'Confidence',
-    description: 'Walk in knowing your worth. Every step, yours.',
+    title: 'DYSTINCT Mode 👑',
+    description: 'Arabic trap swagger. Walk tall, feel unstoppable.',
     emoji: '👑',
-    gradient: 'linear-gradient(135deg, rgba(234,179,8,0.4) 0%, rgba(249,115,22,0.45) 100%)',
-    tracks: CONFIDENCE_TRACKS,
+    gradient: 'linear-gradient(135deg, rgba(79,70,229,0.5) 0%, rgba(139,92,246,0.45) 100%)',
+    tracks: DYSTINCT_TRACKS,
+  },
+  {
+    id: 'pl-french-drift',
+    category: 'rainy-tokyo',
+    title: 'French Drift 🌧️',
+    description: 'French & international sounds for rainy evenings and wandering thoughts.',
+    emoji: '🌧️',
+    gradient: 'linear-gradient(135deg, rgba(99,102,241,0.45) 0%, rgba(59,130,246,0.35) 100%)',
+    tracks: FRENCH_VIBES,
+  },
+  {
+    id: 'pl-queen',
+    category: 'emotional-release',
+    title: 'Queen Catharsis 🎸',
+    description: "For when you need to feel it all. Freddie holds nothing back — and neither should you.",
+    emoji: '🎸',
+    gradient: 'linear-gradient(135deg, rgba(99,102,241,0.5) 0%, rgba(139,92,246,0.45) 100%)',
+    tracks: QUEEN_CATHARSIS,
   },
 ]
 
+// ============================================================
+// Mood → Playlist recommendation order
+// ============================================================
+export const MOOD_PLAYLIST_MAP: Record<string, string[]> = {
+  alive:    ['pl-arabic-fire', 'pl-britney', 'pl-dystinct', 'pl-bruno'],
+  joyful:   ['pl-bruno', 'pl-arabic-fire', 'pl-britney'],
+  calm:     ['pl-french-drift', 'pl-arabic-soft'],
+  soft:     ['pl-arabic-soft', 'pl-french-drift', 'pl-arabic-healing'],
+  drifting: ['pl-arabic-nights', 'pl-french-drift'],
+  heavy:    ['pl-queen', 'pl-arabic-nights', 'pl-arabic-healing'],
+  anxious:  ['pl-arabic-soft', 'pl-french-drift'],
+  healing:  ['pl-arabic-healing', 'pl-queen', 'pl-arabic-soft'],
+}
+
 // ---- Helpers ----
 
-export function getPlaylistByCategory(category: MusicCategory): Playlist | undefined {
+export function getPlaylistByCategory(category: string): Playlist | undefined {
   return PLAYLISTS.find(p => p.category === category)
 }
 
 export function getPlaylistsForMood(moodId: string): Playlist[] {
-  return PLAYLISTS.filter(p =>
-    p.tracks.some(t => t.mood.includes(moodId as any))
-  )
+  const ids = MOOD_PLAYLIST_MAP[moodId] ?? []
+  return ids
+    .map(id => PLAYLISTS.find(p => p.id === id))
+    .filter(Boolean) as Playlist[]
 }
 
 export function formatDuration(seconds: number): string {
