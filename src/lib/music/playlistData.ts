@@ -139,7 +139,7 @@ export const PLAYLISTS: Playlist[] = [
     id: 'pl-comfort',
     category: 'comfort',
     title: 'Soft Comfort',
-    description: 'Like being wrapped in something warm that says: you're okay.',
+    description: 'Like being wrapped in something warm that says: you\'re okay.',
     emoji: '🤍',
     gradient: 'linear-gradient(135deg, rgba(236,72,153,0.35) 0%, rgba(196,181,253,0.35) 100%)',
     tracks: COMFORT_TRACKS,
