@@ -9,7 +9,7 @@ export default function ComfortPill() {
   return (
     <motion.button
       whileTap={{ scale: 0.98 }}
-      onClick={() => router.push('/comfort')}
+      onClick={() => router.push('/comfort' as any)}
       className="comfort-pill w-full"
     >
       {/* Pulsing dot */}

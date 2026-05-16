@@ -73,7 +73,7 @@ export default function JournalPage() {
 
                 {/* Write button */}
                 <motion.button
-                  onClick={() => router.push('/journal/new')}
+                  onClick={() => router.push('/journal/new' as any)}
                   whileTap={{ scale: 0.93 }}
                   className="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl text-[12px] font-medium"
                   style={{
@@ -213,7 +213,7 @@ export default function JournalPage() {
                       This is your private space. Write whatever is in your heart — there are no rules here.
                     </p>
                     <motion.button
-                      onClick={() => router.push('/journal/new')}
+                      onClick={() => router.push('/journal/new' as any)}
                       whileTap={{ scale: 0.95 }}
                       className="px-6 py-3 rounded-2xl text-[13px] font-medium"
                       style={{

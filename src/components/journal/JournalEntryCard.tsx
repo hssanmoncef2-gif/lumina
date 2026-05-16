@@ -47,7 +47,7 @@ export default function JournalEntryCard({ entry, onToggleFav, onDelete, index =
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, delay: index * 0.06, ease: [0.25, 0.46, 0.45, 0.94] }}
-      onClick={() => router.push(`/journal/${entry.id}`)}
+      onClick={() => router.push(`/journal/${entry.id}` as any)}
       className="relative cursor-pointer overflow-hidden"
       style={{
         background:   'rgba(255,255,255,0.04)',

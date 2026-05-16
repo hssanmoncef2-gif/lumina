@@ -36,7 +36,8 @@ export default function NewJournalEntryPage() {
       isFavorite:  data.isFavorite,
     })
     if (entry) {
-      router.push(`/journal/${entry.id}`)
+      router.push(`/journal/${entry.id}` as any)
+
     }
   }
 

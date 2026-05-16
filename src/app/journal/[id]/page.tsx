@@ -50,11 +50,11 @@ export default function JournalEntryPage({ params }: PageProps) {
     setIsEditing(false)
   }
 
-  async function handleDelete() {
+async function handleDelete() {
     setIsDeleting(true)
     try {
       await deleteEntry(id, userId)
-      router.push('/journal')
+      router.push('/journal' as any)
     } catch {
       setIsDeleting(false)
     }
@@ -88,7 +88,7 @@ export default function JournalEntryPage({ params }: PageProps) {
           Entry not found.
         </p>
         <button
-          onClick={() => router.push('/journal')}
+          onClick={() => router.push('/journal' as any)}
           className="text-[12px] text-purple-300/60"
           style={{ fontFamily: 'var(--font-sora)' }}
         >

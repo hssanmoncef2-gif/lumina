@@ -56,7 +56,7 @@ export default function OnboardingPage() {
       setOnboardingComplete(true)
       try { localStorage.setItem('lumina_onboarding_done', '1') } catch {}
       toast.success(`Welcome to your sanctuary${name ? `, ${name}` : ''} 🌙`, '✦')
-      router.push('/')
+      router.push('/' as any)
       return
     }
 

@@ -20,7 +20,7 @@ export default function LetterCard({ letter }: Props) {
 
   function handleOpen() {
     setTapping(true)
-    setTimeout(() => router.push(`/letters/${letter.trigger}`), 300)
+   setTimeout(() => router.push(`/letters/${letter.trigger}` as any), 300)
   }
 
   return (

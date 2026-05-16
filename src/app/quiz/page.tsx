@@ -47,7 +47,7 @@ export default function QuizPage() {
 
     setIsDone(true)
     setTimeout(() => {
-      router.push('/')
+      router.push('/' as any)
     }, 1800)
   }, [setMood, setAmbient, router])
 

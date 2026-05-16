@@ -22,7 +22,7 @@ export default function QuickActions() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: i * 0.07, duration: 0.4 }}
           whileTap={{ scale: 0.93 }}
-          onClick={() => router.push(action.href)}
+          onClick={() => router.push(action.href as any)}
           className="flex-1 flex flex-col items-center gap-1.5 py-3 rounded-[16px] transition-all duration-300"
           style={{
             background: action.gradient,
