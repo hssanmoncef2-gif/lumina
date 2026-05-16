@@ -11,7 +11,7 @@ export interface ILetterRead extends Document {
 }
 
 const LetterReadSchema = new Schema<ILetterRead>({
-  userId:   { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  userId:   { type: Schema.Types.Mixed, required: true },
   letterId: { type: String, required: true },
   readAt:   { type: Date, default: Date.now },
 })

@@ -15,7 +15,7 @@ export interface IMoodEntry extends Document {
 
 const MoodEntrySchema = new Schema<IMoodEntry>(
   {
-    userId:    { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+    userId:    { type: Schema.Types.Mixed, required: true, index: true },
     moodId:    { type: String, required: true },
     intensity: { type: Number, default: 3, min: 1, max: 5 },
     notes:     { type: String },
