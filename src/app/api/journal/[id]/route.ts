@@ -7,16 +7,21 @@ import { connectDB } from '@/lib/mongodb/client'
 import { JournalEntry } from '@/lib/models/JournalEntry'
 import mongoose from 'mongoose'
 
+function toObjectId(id: string) {
+  return mongoose.Types.ObjectId.isValid(id) ? new mongoose.Types.ObjectId(id) : null
+}
+
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const userId = req.nextUrl.searchParams.get('userId')
   if (!userId) return NextResponse.json({ error: 'userId required' }, { status: 400 })
 
+  const entryId = toObjectId(id)
+  if (!entryId) return NextResponse.json({ error: 'Invalid id' }, { status: 400 })
+
   await connectDB()
-  const entry = await JournalEntry.findOne({
-    _id:    new mongoose.Types.ObjectId(id),
-    userId: new mongoose.Types.ObjectId(userId),
-  }).lean()
+  const userIdValue = toObjectId(userId) ?? userId
+  const entry = await JournalEntry.findOne({ _id: entryId, userId: userIdValue }).lean()
 
   if (!entry) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   return NextResponse.json(entry)
@@ -26,6 +31,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const { id } = await params
   const { userId, title, content, mood, moodIntensity, tags, isFavorite, aiSummary } = await req.json()
   if (!userId) return NextResponse.json({ error: 'userId required' }, { status: 400 })
+
+  const entryId = toObjectId(id)
+  if (!entryId) return NextResponse.json({ error: 'Invalid id' }, { status: 400 })
 
   await connectDB()
 
@@ -38,8 +46,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (isFavorite    !== undefined) patch.isFavorite    = isFavorite
   if (aiSummary     !== undefined) patch.aiSummary     = aiSummary
 
+  const userIdValue = toObjectId(userId) ?? userId
   const entry = await JournalEntry.findOneAndUpdate(
-    { _id: new mongoose.Types.ObjectId(id), userId: new mongoose.Types.ObjectId(userId) },
+    { _id: entryId, userId: userIdValue },
     { $set: patch },
     { new: true }
   ).lean()
@@ -53,11 +62,12 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   const { userId } = await req.json()
   if (!userId) return NextResponse.json({ error: 'userId required' }, { status: 400 })
 
+  const entryId = toObjectId(id)
+  if (!entryId) return NextResponse.json({ error: 'Invalid id' }, { status: 400 })
+
   await connectDB()
-  await JournalEntry.deleteOne({
-    _id:    new mongoose.Types.ObjectId(id),
-    userId: new mongoose.Types.ObjectId(userId),
-  })
+  const userIdValue = toObjectId(userId) ?? userId
+  await JournalEntry.deleteOne({ _id: entryId, userId: userIdValue })
 
   return NextResponse.json({ ok: true })
 }

@@ -5,6 +5,7 @@
 // ============================================================
 
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { motion } from 'framer-motion'
 import AtmosphericBackground from '@/components/layout/AtmosphericBackground'
 import FloatingParticles from '@/components/ui/FloatingParticles'
@@ -16,8 +17,10 @@ const DEV_USER_ID = 'dev-user'
 
 export default function NewJournalEntryPage() {
   const router      = useRouter()
+  const { data: session } = useSession()
   const currentMood = useLuminaStore(s => s.currentMood)
-  const userId      = useLuminaStore(s => s.user?.id) ?? DEV_USER_ID
+  // Prefer real session userId, fall back to store, then dev fallback
+  const userId = (session?.user as any)?.id ?? useLuminaStore.getState().user?.id ?? DEV_USER_ID
 
   const { create, isSaving, error } = useCreateEntry(userId)
 

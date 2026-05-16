@@ -20,7 +20,7 @@ export interface IJournalEntry extends Document {
 
 const JournalEntrySchema = new Schema<IJournalEntry>(
   {
-    userId:       { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+    userId:       { type: Schema.Types.Mixed, required: true, index: true },
     title:        { type: String },
     content:      { type: String, required: true },
     mood:         { type: String },

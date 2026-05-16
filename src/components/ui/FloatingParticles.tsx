@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, memo } from 'react'
+import { useMemo, useState, useEffect, memo } from 'react'
 import type { MoodId } from '@/types'
 
 const MOOD_COLORS: Record<string, string[]> = {
@@ -29,11 +29,15 @@ interface Props {
   count?: number
 }
 
-// CSS-only version for SSR safety (no canvas needed)
+// CSS-only version — client-only to avoid hydration mismatch from Math.random()
 const FloatingParticles = memo(function FloatingParticles({ mood, count = 18 }: Props) {
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => { setMounted(true) }, [])
+
   const colors = MOOD_COLORS[mood ?? 'default'] ?? MOOD_COLORS.default
 
-  const particles = Array.from({ length: count }, (_, i) => ({
+  // Generate stable random values once on client only
+  const particles = useMemo(() => Array.from({ length: count }, (_, i) => ({
     id: i,
     left: `${Math.random() * 100}%`,
     startY: `${60 + Math.random() * 40}%`,
@@ -42,7 +46,9 @@ const FloatingParticles = memo(function FloatingParticles({ mood, count = 18 }: 
     duration: `${4 + Math.random() * 7}s`,
     delay: `${Math.random() * 6}s`,
     dx: `${(Math.random() - 0.5) * 50}px`,
-  }))
+  })), [count]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (!mounted) return null
 
   return (
     <div className="fixed inset-0 z-[2] pointer-events-none overflow-hidden">
