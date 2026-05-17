@@ -181,7 +181,7 @@ class AmbientAudioEngine {
       const lfoGain = ctx.createGain()
       lfoGain.gain.value = 0.005
       lfo.connect(lfoGain)
-      lfoGain.connect(node.gain.gain as any)
+      lfoGain.connect(node.gain)
       lfo.start()
       this.activeNodes.push(node)
     })
@@ -316,9 +316,18 @@ class AmbientAudioEngine {
   getPreset(): AmbientPreset | null { return this.currentPreset }
 }
 
-// Singleton
+// Singleton — lazy, client-only
+let _engine: AmbientAudioEngine | null = null
+
+export function getAmbientEngine(): AmbientAudioEngine | null {
+  if (typeof window === 'undefined') return null
+  if (!_engine) _engine = new AmbientAudioEngine()
+  return _engine
+}
+
+/** @deprecated use getAmbientEngine() */
 export const ambientEngine = typeof window !== 'undefined'
-  ? new AmbientAudioEngine()
+  ? (() => { _engine = new AmbientAudioEngine(); return _engine })()
   : null
 
 // Mood → best ambient preset mapping
