@@ -14,15 +14,22 @@ declare global {
 const PDFJS_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'
 const PDFJS_WORKER = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
 
-// ============================================================
-// Gutenberg → plain text URL (via CORS proxy)
-// ============================================================
-function gutenbergTextUrl(id: number) {
-  // Try multiple URL patterns via corsproxy.io
-  return `https://corsproxy.io/?url=https://www.gutenberg.org/files/${id}/${id}-0.txt`
-}
-function gutenbergTextUrlFallback(id: number) {
-  return `https://corsproxy.io/?url=https://www.gutenberg.org/files/${id}/${id}.txt`
+async function fetchGutenbergText(id: number): Promise<string> {
+  const urls = [
+    `https://www.gutenberg.org/files/${id}/${id}-0.txt`,
+    `https://www.gutenberg.org/files/${id}/${id}.txt`,
+    `https://www.gutenberg.org/cache/epub/${id}/pg${id}.txt`,
+  ]
+  for (const url of urls) {
+    try {
+      const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`
+      const res = await fetch(proxy)
+      if (!res.ok) continue
+      const data = await res.json()
+      if (data?.contents && data.contents.length > 500) return data.contents
+    } catch {}
+  }
+  throw new Error('All URLs failed')
 }
 
 // ============================================================
@@ -101,10 +108,7 @@ export default function ReaderPage() {
     setIsTextMode(true)
     setIsLoading(true)
     try {
-      let res = await fetch(gutenbergTextUrl(id))
-      if (!res.ok) res = await fetch(gutenbergTextUrlFallback(id))
-      if (!res.ok) throw new Error('Failed to fetch text')
-      const text = await res.text()
+      const text = await fetchGutenbergText(id)
       const chunks: string[] = []
       for (let i = 0; i < text.length; i += 2000) chunks.push(text.slice(i, i + 2000))
       setTextContent(text)

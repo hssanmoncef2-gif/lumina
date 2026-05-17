@@ -70,16 +70,12 @@ const GENRE_FILTERS = [
 const GUTENBERG_PICKS: Book[] = [
   { id: 'g-1342', title: 'Pride and Prejudice', author: 'Jane Austen', coverUrl: 'https://www.gutenberg.org/cache/epub/1342/pg1342.cover.medium.jpg', source: 'gutenberg', gutenbergId: 1342, genre: 'romance', description: 'A timeless story of love, class, and misunderstanding.' },
   { id: 'g-11',   title: "Alice's Adventures in Wonderland", author: 'Lewis Carroll', coverUrl: 'https://www.gutenberg.org/cache/epub/11/pg11.cover.medium.jpg', source: 'gutenberg', gutenbergId: 11, genre: 'fiction', description: 'Fall down the rabbit hole.' },
-  { id: 'g-1080', title: 'A Modest Proposal', author: 'Jonathan Swift', coverUrl: 'https://www.gutenberg.org/cache/epub/1080/pg1080.cover.medium.jpg', source: 'gutenberg', gutenbergId: 1080, genre: 'fiction', description: 'Sharp satire from 1729.' },
   { id: 'g-2701', title: 'Moby Dick', author: 'Herman Melville', coverUrl: 'https://www.gutenberg.org/cache/epub/2701/pg2701.cover.medium.jpg', source: 'gutenberg', gutenbergId: 2701, genre: 'fiction', description: 'An obsessive hunt across the sea.' },
   { id: 'g-84',   title: 'Frankenstein', author: 'Mary Shelley', coverUrl: 'https://www.gutenberg.org/cache/epub/84/pg84.cover.medium.jpg', source: 'gutenberg', gutenbergId: 84, genre: 'fiction', description: 'Creation, ambition, and consequence.' },
   { id: 'g-1661', title: 'The Adventures of Sherlock Holmes', author: 'Arthur Conan Doyle', coverUrl: 'https://www.gutenberg.org/cache/epub/1661/pg1661.cover.medium.jpg', source: 'gutenberg', gutenbergId: 1661, genre: 'mystery', description: 'Elementary, my dear reader.' },
   { id: 'g-5200', title: 'Metamorphosis', author: 'Franz Kafka', coverUrl: 'https://www.gutenberg.org/cache/epub/5200/pg5200.cover.medium.jpg', source: 'gutenberg', gutenbergId: 5200, genre: 'fiction', description: 'Wake up as something else.' },
   { id: 'g-174',  title: 'The Picture of Dorian Gray', author: 'Oscar Wilde', coverUrl: 'https://www.gutenberg.org/cache/epub/174/pg174.cover.medium.jpg', source: 'gutenberg', gutenbergId: 174, genre: 'fiction', description: 'Beauty, corruption, and a haunted portrait.' },
   { id: 'g-345',  title: 'Dracula', author: 'Bram Stoker', coverUrl: 'https://www.gutenberg.org/cache/epub/345/pg345.cover.medium.jpg', source: 'gutenberg', gutenbergId: 345, genre: 'mystery', description: 'The original vampire tale.' },
-  { id: 'g-25344',title: 'The Enchanted April', author: 'Elizabeth von Arnim', coverUrl: 'https://www.gutenberg.org/cache/epub/25344/pg25344.cover.medium.jpg', source: 'gutenberg', gutenbergId: 25344, genre: 'romance', description: 'Four women, an Italian castle, and renewal.' },
-  { id: 'g-16',   title: 'Peter Pan', author: 'J.M. Barrie', coverUrl: 'https://www.gutenberg.org/cache/epub/16/pg16.cover.medium.jpg', source: 'gutenberg', gutenbergId: 16, genre: 'fiction', description: 'The boy who never grew up.' },
-  { id: 'g-4300', title: 'Ulysses', author: 'James Joyce', coverUrl: 'https://www.gutenberg.org/cache/epub/4300/pg4300.cover.medium.jpg', source: 'gutenberg', gutenbergId: 4300, genre: 'fiction', description: 'A single day in Dublin, forever.' },
 ]
 
 // ============================================================
