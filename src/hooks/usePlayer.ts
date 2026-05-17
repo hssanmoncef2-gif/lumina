@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, useCallback } from 'react'
 import { useLuminaStore } from '@/store/useAppStore'
-import type { Track, Playlist } from '@/types'
+import type { Track } from '@/types'
 
 // ============================================================
 // usePlayer — Audio element management hook
@@ -10,10 +10,8 @@ import type { Track, Playlist } from '@/types'
 // ============================================================
 
 export function usePlayer() {
-  const { player, setPlayer } = useLuminaStore(s => ({
-    player: s.player,
-    setPlayer: s.setPlayer,
-  }))
+  const player    = useLuminaStore(s => s.player)
+  const setPlayer = useLuminaStore(s => s.setPlayer)
 
   const audioRef             = useRef<HTMLAudioElement | null>(null)
   const progressIntervalRef  = useRef<NodeJS.Timeout | null>(null)
