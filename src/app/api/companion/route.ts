@@ -42,6 +42,7 @@ function buildSystemPrompt(context: CompanionContext): string {
   if (context.recentJournalSummary) lines.push(`- From their recent journal: "${context.recentJournalSummary}"`)
   if (context.favoriteMusic)        lines.push(`- Music they love: ${context.favoriteMusic}`)
   lines.push(`- Time of day: ${context.timeOfDay} — ${getTimeGreeting(context.timeOfDay)}`)
+  lines.push(``, `Important: Early in the conversation (within your first 1-2 messages), naturally mention that this chat is completely private — nothing said here is saved or backed up, and the conversation disappears when they leave. Weave it in naturally, don't make it feel like a disclaimer. Example: "Just so you know, nothing in this chat gets saved — it's just between us."`)
   lines.push(``, `Be a real, grounded support presence. The person came here to be heard and helped — give them that.`)
   return lines.join('\n')
 }
