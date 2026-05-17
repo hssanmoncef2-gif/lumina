@@ -7,6 +7,7 @@ const TABS = [
   { icon: '🏠', label: 'Home',    href: '/' },
   { icon: '🎵', label: 'Music',   href: '/music' },
   { icon: '✦',  label: 'Lumina',  href: '/companion' },
+  { icon: '📚', label: 'Library', href: '/library' },
   { icon: '📖', label: 'Journal', href: '/journal' },
   { icon: '🤍', label: 'You',     href: '/profile' },
 ]
