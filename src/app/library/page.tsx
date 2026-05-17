@@ -65,17 +65,66 @@ const GENRE_FILTERS = [
 ]
 
 // ============================================================
-// Gutenberg curated picks (classics — always free)
+// Gutenberg curated picks — 50 classics across all genres
 // ============================================================
 const GUTENBERG_PICKS: Book[] = [
-  { id: 'g-1342', title: 'Pride and Prejudice', author: 'Jane Austen', coverUrl: 'https://www.gutenberg.org/cache/epub/1342/pg1342.cover.medium.jpg', source: 'gutenberg', gutenbergId: 1342, genre: 'romance', description: 'A timeless story of love, class, and misunderstanding.' },
-  { id: 'g-11',   title: "Alice's Adventures in Wonderland", author: 'Lewis Carroll', coverUrl: 'https://www.gutenberg.org/cache/epub/11/pg11.cover.medium.jpg', source: 'gutenberg', gutenbergId: 11, genre: 'fiction', description: 'Fall down the rabbit hole.' },
-  { id: 'g-2701', title: 'Moby Dick', author: 'Herman Melville', coverUrl: 'https://www.gutenberg.org/cache/epub/2701/pg2701.cover.medium.jpg', source: 'gutenberg', gutenbergId: 2701, genre: 'fiction', description: 'An obsessive hunt across the sea.' },
-  { id: 'g-84',   title: 'Frankenstein', author: 'Mary Shelley', coverUrl: 'https://www.gutenberg.org/cache/epub/84/pg84.cover.medium.jpg', source: 'gutenberg', gutenbergId: 84, genre: 'fiction', description: 'Creation, ambition, and consequence.' },
-  { id: 'g-1661', title: 'The Adventures of Sherlock Holmes', author: 'Arthur Conan Doyle', coverUrl: 'https://www.gutenberg.org/cache/epub/1661/pg1661.cover.medium.jpg', source: 'gutenberg', gutenbergId: 1661, genre: 'mystery', description: 'Elementary, my dear reader.' },
-  { id: 'g-5200', title: 'Metamorphosis', author: 'Franz Kafka', coverUrl: 'https://www.gutenberg.org/cache/epub/5200/pg5200.cover.medium.jpg', source: 'gutenberg', gutenbergId: 5200, genre: 'fiction', description: 'Wake up as something else.' },
-  { id: 'g-174',  title: 'The Picture of Dorian Gray', author: 'Oscar Wilde', coverUrl: 'https://www.gutenberg.org/cache/epub/174/pg174.cover.medium.jpg', source: 'gutenberg', gutenbergId: 174, genre: 'fiction', description: 'Beauty, corruption, and a haunted portrait.' },
-  { id: 'g-345',  title: 'Dracula', author: 'Bram Stoker', coverUrl: 'https://www.gutenberg.org/cache/epub/345/pg345.cover.medium.jpg', source: 'gutenberg', gutenbergId: 345, genre: 'mystery', description: 'The original vampire tale.' },
+  // Romance
+  { id: 'g-1342',  title: 'Pride and Prejudice',              author: 'Jane Austen',           coverUrl: 'https://www.gutenberg.org/cache/epub/1342/pg1342.cover.medium.jpg',   source: 'gutenberg', gutenbergId: 1342,  genre: 'romance',    description: 'Love, class, and misunderstanding.' },
+  { id: 'g-25344', title: 'The Enchanted April',              author: 'Elizabeth von Arnim',   coverUrl: 'https://www.gutenberg.org/cache/epub/25344/pg25344.cover.medium.jpg', source: 'gutenberg', gutenbergId: 25344, genre: 'romance',    description: 'Four women, an Italian castle, renewal.' },
+  { id: 'g-105',   title: 'Persuasion',                       author: 'Jane Austen',           coverUrl: 'https://www.gutenberg.org/cache/epub/105/pg105.cover.medium.jpg',     source: 'gutenberg', gutenbergId: 105,   genre: 'romance',    description: 'Second chances and quiet devotion.' },
+  { id: 'g-158',   title: 'Emma',                             author: 'Jane Austen',           coverUrl: 'https://www.gutenberg.org/cache/epub/158/pg158.cover.medium.jpg',     source: 'gutenberg', gutenbergId: 158,   genre: 'romance',    description: 'A matchmaker who needs matching.' },
+  { id: 'g-768',   title: 'Wuthering Heights',                author: 'Emily Brontë',          coverUrl: 'https://www.gutenberg.org/cache/epub/768/pg768.cover.medium.jpg',     source: 'gutenberg', gutenbergId: 768,   genre: 'romance',    description: 'Wild love on the Yorkshire moors.' },
+  { id: 'g-1260',  title: 'Jane Eyre',                        author: 'Charlotte Brontë',      coverUrl: 'https://www.gutenberg.org/cache/epub/1260/pg1260.cover.medium.jpg',   source: 'gutenberg', gutenbergId: 1260,  genre: 'romance',    description: 'A governess with an iron soul.' },
+  // Fiction
+  { id: 'g-11',    title: "Alice in Wonderland",              author: 'Lewis Carroll',         coverUrl: 'https://www.gutenberg.org/cache/epub/11/pg11.cover.medium.jpg',       source: 'gutenberg', gutenbergId: 11,    genre: 'fiction',    description: 'Fall down the rabbit hole.' },
+  { id: 'g-2701',  title: 'Moby Dick',                        author: 'Herman Melville',       coverUrl: 'https://www.gutenberg.org/cache/epub/2701/pg2701.cover.medium.jpg',   source: 'gutenberg', gutenbergId: 2701,  genre: 'fiction',    description: 'An obsessive hunt across the sea.' },
+  { id: 'g-84',    title: 'Frankenstein',                     author: 'Mary Shelley',          coverUrl: 'https://www.gutenberg.org/cache/epub/84/pg84.cover.medium.jpg',       source: 'gutenberg', gutenbergId: 84,    genre: 'fiction',    description: 'Creation, ambition, consequence.' },
+  { id: 'g-5200',  title: 'Metamorphosis',                    author: 'Franz Kafka',           coverUrl: 'https://www.gutenberg.org/cache/epub/5200/pg5200.cover.medium.jpg',   source: 'gutenberg', gutenbergId: 5200,  genre: 'fiction',    description: 'Wake up as something else.' },
+  { id: 'g-174',   title: 'The Picture of Dorian Gray',       author: 'Oscar Wilde',           coverUrl: 'https://www.gutenberg.org/cache/epub/174/pg174.cover.medium.jpg',     source: 'gutenberg', gutenbergId: 174,   genre: 'fiction',    description: 'Beauty, corruption, a haunted portrait.' },
+  { id: 'g-16',    title: 'Peter Pan',                        author: 'J.M. Barrie',           coverUrl: 'https://www.gutenberg.org/cache/epub/16/pg16.cover.medium.jpg',       source: 'gutenberg', gutenbergId: 16,    genre: 'fiction',    description: 'The boy who never grew up.' },
+  { id: 'g-98',    title: 'A Tale of Two Cities',             author: 'Charles Dickens',       coverUrl: 'https://www.gutenberg.org/cache/epub/98/pg98.cover.medium.jpg',       source: 'gutenberg', gutenbergId: 98,    genre: 'fiction',    description: 'Revolution, sacrifice, redemption.' },
+  { id: 'g-1400',  title: 'Great Expectations',               author: 'Charles Dickens',       coverUrl: 'https://www.gutenberg.org/cache/epub/1400/pg1400.cover.medium.jpg',   source: 'gutenberg', gutenbergId: 1400,  genre: 'fiction',    description: 'A boy who dreams of becoming a gentleman.' },
+  { id: 'g-76',    title: 'Adventures of Huckleberry Finn',   author: 'Mark Twain',            coverUrl: 'https://www.gutenberg.org/cache/epub/76/pg76.cover.medium.jpg',       source: 'gutenberg', gutenbergId: 76,    genre: 'fiction',    description: 'Freedom on the Mississippi.' },
+  { id: 'g-74',    title: 'The Adventures of Tom Sawyer',     author: 'Mark Twain',            coverUrl: 'https://www.gutenberg.org/cache/epub/74/pg74.cover.medium.jpg',       source: 'gutenberg', gutenbergId: 74,    genre: 'fiction',    description: 'Boyhood mischief and big dreams.' },
+  { id: 'g-1232',  title: 'The Prince',                       author: 'Niccolò Machiavelli',   coverUrl: 'https://www.gutenberg.org/cache/epub/1232/pg1232.cover.medium.jpg',   source: 'gutenberg', gutenbergId: 1232,  genre: 'philosophy', description: 'The original guide to power.' },
+  { id: 'g-2554',  title: 'Crime and Punishment',             author: 'Fyodor Dostoevsky',     coverUrl: 'https://www.gutenberg.org/cache/epub/2554/pg2554.cover.medium.jpg',   source: 'gutenberg', gutenbergId: 2554,  genre: 'fiction',    description: 'Guilt, redemption, and the human soul.' },
+  { id: 'g-2600',  title: 'War and Peace',                    author: 'Leo Tolstoy',           coverUrl: 'https://www.gutenberg.org/cache/epub/2600/pg2600.cover.medium.jpg',   source: 'gutenberg', gutenbergId: 2600,  genre: 'fiction',    description: 'Love and war in Napoleonic Russia.' },
+  { id: 'g-1998',  title: 'Thus Spoke Zarathustra',           author: 'Friedrich Nietzsche',   coverUrl: 'https://www.gutenberg.org/cache/epub/1998/pg1998.cover.medium.jpg',   source: 'gutenberg', gutenbergId: 1998,  genre: 'philosophy', description: 'Beyond good and evil.' },
+  // Mystery
+  { id: 'g-1661',  title: 'The Adventures of Sherlock Holmes', author: 'Arthur Conan Doyle',  coverUrl: 'https://www.gutenberg.org/cache/epub/1661/pg1661.cover.medium.jpg',   source: 'gutenberg', gutenbergId: 1661,  genre: 'mystery',    description: 'Elementary, my dear reader.' },
+  { id: 'g-345',   title: 'Dracula',                           author: 'Bram Stoker',          coverUrl: 'https://www.gutenberg.org/cache/epub/345/pg345.cover.medium.jpg',     source: 'gutenberg', gutenbergId: 345,   genre: 'mystery',    description: 'The original vampire tale.' },
+  { id: 'g-2852',  title: 'The Hound of the Baskervilles',    author: 'Arthur Conan Doyle',   coverUrl: 'https://www.gutenberg.org/cache/epub/2852/pg2852.cover.medium.jpg',   source: 'gutenberg', gutenbergId: 2852,  genre: 'mystery',    description: 'Holmes on his greatest case.' },
+  { id: 'g-863',   title: 'The Mystery of the Yellow Room',   author: 'Gaston Leroux',        coverUrl: 'https://www.gutenberg.org/cache/epub/863/pg863.cover.medium.jpg',     source: 'gutenberg', gutenbergId: 863,   genre: 'mystery',    description: 'A locked room, an impossible crime.' },
+  // Philosophy / Self-Help
+  { id: 'g-4705',  title: 'Meditations',                      author: 'Marcus Aurelius',       coverUrl: 'https://www.gutenberg.org/cache/epub/4705/pg4705.cover.medium.jpg',   source: 'gutenberg', gutenbergId: 4705,  genre: 'philosophy', description: 'Stoic wisdom from a Roman emperor.' },
+  { id: 'g-3600',  title: 'Enchiridion',                      author: 'Epictetus',             coverUrl: 'https://www.gutenberg.org/cache/epub/3600/pg3600.cover.medium.jpg',   source: 'gutenberg', gutenbergId: 3600,  genre: 'philosophy', description: 'Control what you can. Let go of the rest.' },
+  { id: 'g-45631', title: 'The Art of War',                   author: 'Sun Tzu',               coverUrl: 'https://www.gutenberg.org/cache/epub/45631/pg45631.cover.medium.jpg', source: 'gutenberg', gutenbergId: 45631, genre: 'philosophy', description: 'Ancient strategy for modern life.' },
+  { id: 'g-1497',  title: 'The Republic',                     author: 'Plato',                 coverUrl: 'https://www.gutenberg.org/cache/epub/1497/pg1497.cover.medium.jpg',   source: 'gutenberg', gutenbergId: 1497,  genre: 'philosophy', description: 'Justice, society, and the ideal state.' },
+  { id: 'g-2680',  title: 'Beyond Good and Evil',             author: 'Friedrich Nietzsche',   coverUrl: 'https://www.gutenberg.org/cache/epub/2680/pg2680.cover.medium.jpg',   source: 'gutenberg', gutenbergId: 2680,  genre: 'philosophy', description: 'Challenge every moral assumption.' },
+  // Poetry
+  { id: 'g-1063',  title: 'The Raven and Other Poems',        author: 'Edgar Allan Poe',       coverUrl: 'https://www.gutenberg.org/cache/epub/1063/pg1063.cover.medium.jpg',   source: 'gutenberg', gutenbergId: 1063,  genre: 'poetry',     description: 'Darkness, beauty, and haunting verse.' },
+  { id: 'g-1065',  title: 'The Waste Land',                   author: 'T.S. Eliot',            coverUrl: 'https://www.gutenberg.org/cache/epub/1065/pg1065.cover.medium.jpg',   source: 'gutenberg', gutenbergId: 1065,  genre: 'poetry',     description: 'The defining poem of the 20th century.' },
+  { id: 'g-1934',  title: 'Songs of Innocence and Experience', author: 'William Blake',        coverUrl: 'https://www.gutenberg.org/cache/epub/1934/pg1934.cover.medium.jpg',   source: 'gutenberg', gutenbergId: 1934,  genre: 'poetry',     description: 'Two states of the human soul.' },
+  { id: 'g-1268',  title: 'Leaves of Grass',                  author: 'Walt Whitman',          coverUrl: 'https://www.gutenberg.org/cache/epub/1268/pg1268.cover.medium.jpg',   source: 'gutenberg', gutenbergId: 1268,  genre: 'poetry',     description: 'Song of the open road.' },
+  // Self-Help / Memoir
+  { id: 'g-16328', title: 'Narrative of Frederick Douglass',  author: 'Frederick Douglass',   coverUrl: 'https://www.gutenberg.org/cache/epub/16328/pg16328.cover.medium.jpg',  source: 'gutenberg', gutenbergId: 16328, genre: 'self-help',  description: 'A life reclaimed through literacy and courage.' },
+  { id: 'g-522',   title: 'The Autobiography of Benjamin Franklin', author: 'Benjamin Franklin', coverUrl: 'https://www.gutenberg.org/cache/epub/522/pg522.cover.medium.jpg', source: 'gutenberg', gutenbergId: 522,   genre: 'self-help',  description: 'How to build a life and a nation.' },
+  { id: 'g-3207',  title: 'Meditations on First Philosophy',  author: 'René Descartes',        coverUrl: 'https://www.gutenberg.org/cache/epub/3207/pg3207.cover.medium.jpg',   source: 'gutenberg', gutenbergId: 3207,  genre: 'philosophy', description: 'I think, therefore I am.' },
+  // More fiction
+  { id: 'g-1080',  title: 'A Modest Proposal',                author: 'Jonathan Swift',        coverUrl: 'https://www.gutenberg.org/cache/epub/1080/pg1080.cover.medium.jpg',   source: 'gutenberg', gutenbergId: 1080,  genre: 'fiction',    description: 'Sharp satire from 1729.' },
+  { id: 'g-219',   title: 'Heart of Darkness',                author: 'Joseph Conrad',         coverUrl: 'https://www.gutenberg.org/cache/epub/219/pg219.cover.medium.jpg',     source: 'gutenberg', gutenbergId: 219,   genre: 'fiction',    description: 'A journey into the dark heart of empire.' },
+  { id: 'g-244',   title: 'A Study in Scarlet',               author: 'Arthur Conan Doyle',   coverUrl: 'https://www.gutenberg.org/cache/epub/244/pg244.cover.medium.jpg',     source: 'gutenberg', gutenbergId: 244,   genre: 'mystery',    description: 'Where it all began for Holmes.' },
+  { id: 'g-120',   title: 'Treasure Island',                  author: 'Robert Louis Stevenson', coverUrl: 'https://www.gutenberg.org/cache/epub/120/pg120.cover.medium.jpg',   source: 'gutenberg', gutenbergId: 120,   genre: 'fiction',    description: 'Pirates, treasure, and the open sea.' },
+  { id: 'g-35',    title: 'The Time Machine',                 author: 'H.G. Wells',            coverUrl: 'https://www.gutenberg.org/cache/epub/35/pg35.cover.medium.jpg',       source: 'gutenberg', gutenbergId: 35,    genre: 'fiction',    description: 'Travel to the end of time.' },
+  { id: 'g-36',    title: 'The War of the Worlds',            author: 'H.G. Wells',            coverUrl: 'https://www.gutenberg.org/cache/epub/36/pg36.cover.medium.jpg',       source: 'gutenberg', gutenbergId: 36,    genre: 'fiction',    description: 'Earth invaded from Mars.' },
+  { id: 'g-5740',  title: 'Scaramouche',                      author: 'Rafael Sabatini',       coverUrl: 'https://www.gutenberg.org/cache/epub/5740/pg5740.cover.medium.jpg',   source: 'gutenberg', gutenbergId: 5740,  genre: 'fiction',    description: 'Adventure and revolution in France.' },
+  { id: 'g-514',   title: 'Little Women',                     author: 'Louisa May Alcott',     coverUrl: 'https://www.gutenberg.org/cache/epub/514/pg514.cover.medium.jpg',     source: 'gutenberg', gutenbergId: 514,   genre: 'fiction',    description: 'Four sisters growing up during wartime.' },
+  { id: 'g-28054', title: 'The Brothers Karamazov',           author: 'Fyodor Dostoevsky',     coverUrl: 'https://www.gutenberg.org/cache/epub/28054/pg28054.cover.medium.jpg', source: 'gutenberg', gutenbergId: 28054, genre: 'fiction',    description: 'Faith, doubt, murder, and love.' },
+  { id: 'g-2097',  title: 'Don Quixote',                      author: 'Miguel de Cervantes',   coverUrl: 'https://www.gutenberg.org/cache/epub/2097/pg2097.cover.medium.jpg',   source: 'gutenberg', gutenbergId: 2097,  genre: 'fiction',    description: 'The original dreamer tilting at windmills.' },
+  { id: 'g-43',    title: 'The Strange Case of Dr Jekyll and Mr Hyde', author: 'R.L. Stevenson', coverUrl: 'https://www.gutenberg.org/cache/epub/43/pg43.cover.medium.jpg', source: 'gutenberg', gutenbergId: 43,    genre: 'mystery',    description: 'One man, two souls.' },
+  { id: 'g-1184',  title: 'The Count of Monte Cristo',        author: 'Alexandre Dumas',       coverUrl: 'https://www.gutenberg.org/cache/epub/1184/pg1184.cover.medium.jpg',   source: 'gutenberg', gutenbergId: 1184,  genre: 'fiction',    description: 'The greatest revenge story ever told.' },
+  { id: 'g-135',   title: 'Les Misérables',                   author: 'Victor Hugo',           coverUrl: 'https://www.gutenberg.org/cache/epub/135/pg135.cover.medium.jpg',     source: 'gutenberg', gutenbergId: 135,   genre: 'fiction',    description: 'Justice, love, and the human spirit.' },
+  { id: 'g-2413',  title: 'The Importance of Being Earnest',  author: 'Oscar Wilde',           coverUrl: 'https://www.gutenberg.org/cache/epub/2413/pg2413.cover.medium.jpg',   source: 'gutenberg', gutenbergId: 2413,  genre: 'fiction',    description: 'Wit, identity, and cucumber sandwiches.' },
 ]
 
 // ============================================================
@@ -150,28 +199,34 @@ export default function LibraryPage() {
     } catch {}
   }
 
-  // ── Search Open Library ─────────────────────────────────────
+  // ── Search Open Library + filter local picks ───────────────
   const searchOpenLibrary = useCallback(async (q: string) => {
     if (!q.trim()) { setSearchResults([]); return }
     setIsSearching(true)
     try {
+      // Also filter local Gutenberg picks by query
+      const qLow = q.toLowerCase()
+      const localHits = GUTENBERG_PICKS.filter(b =>
+        b.title.toLowerCase().includes(qLow) || b.author.toLowerCase().includes(qLow)
+      )
+
       const res = await fetch(
-        `https://openlibrary.org/search.json?q=${encodeURIComponent(q)}&limit=12&fields=key,title,author_name,cover_i,first_sentence,subject`
+        `https://openlibrary.org/search.json?q=${encodeURIComponent(q)}&limit=20&fields=key,title,author_name,cover_i,first_sentence,subject`
       )
       const data = await res.json()
-      const books: Book[] = (data.docs ?? []).map((d: any) => ({
+      const olBooks: Book[] = (data.docs ?? []).map((d: any) => ({
         id: `ol-${d.key?.replace('/works/', '') ?? Math.random()}`,
         title: d.title ?? 'Unknown',
         author: d.author_name?.[0] ?? 'Unknown',
         coverUrl: d.cover_i
           ? `https://covers.openlibrary.org/b/id/${d.cover_i}-M.jpg`
           : '',
-        source: 'openlibrary',
+        source: 'openlibrary' as const,
         olKey: d.key,
         description: d.first_sentence?.value ?? '',
         genre: d.subject?.[0]?.toLowerCase() ?? 'fiction',
       }))
-      setSearchResults(books)
+      setSearchResults([...localHits, ...olBooks])
     } catch {}
     setIsSearching(false)
   }, [])
@@ -329,7 +384,7 @@ export default function LibraryPage() {
               <p className="text-white/25 text-xs mt-1">Upload PDFs to your Supabase <code className="opacity-60">books</code> bucket.</p>
             </div>
           )}
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-4 gap-2">
             {displayBooks.map(book => (
               <button
                 key={book.id}
@@ -341,7 +396,7 @@ export default function LibraryPage() {
                 }}
               >
                 {/* Cover */}
-                <div className="relative w-full aspect-[2/3]">
+                <div className="relative w-full aspect-[2/2.5]">
                   {book.coverUrl
                     ? <img src={book.coverUrl} alt={book.title} className="w-full h-full object-cover" />
                     : (
@@ -389,7 +444,7 @@ export default function LibraryPage() {
                   )}
                 </div>
                 {/* Info */}
-                <div className="p-3">
+                <div className="p-1.5">
                   <p
                     className="text-white/85 text-xs font-medium leading-tight line-clamp-2"
                     style={{ fontFamily: 'var(--font-sora)' }}

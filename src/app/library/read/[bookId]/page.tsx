@@ -15,21 +15,11 @@ const PDFJS_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.mi
 const PDFJS_WORKER = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
 
 async function fetchGutenbergText(id: number): Promise<string> {
-  const urls = [
-    `https://www.gutenberg.org/files/${id}/${id}-0.txt`,
-    `https://www.gutenberg.org/files/${id}/${id}.txt`,
-    `https://www.gutenberg.org/cache/epub/${id}/pg${id}.txt`,
-  ]
-  for (const url of urls) {
-    try {
-      const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`
-      const res = await fetch(proxy)
-      if (!res.ok) continue
-      const data = await res.json()
-      if (data?.contents && data.contents.length > 500) return data.contents
-    } catch {}
-  }
-  throw new Error('All URLs failed')
+  const res = await fetch(`/api/library/gutenberg?id=${id}`)
+  if (!res.ok) throw new Error('Failed')
+  const text = await res.text()
+  if (text.length < 500) throw new Error('Too short')
+  return text
 }
 
 // ============================================================
