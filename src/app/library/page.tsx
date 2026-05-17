@@ -333,7 +333,7 @@ export default function LibraryPage() {
               <p className="text-white/25 text-xs mt-1">Upload PDFs to your Supabase <code className="opacity-60">books</code> bucket.</p>
             </div>
           )}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-3">
             {displayBooks.map(book => (
               <button
                 key={book.id}
