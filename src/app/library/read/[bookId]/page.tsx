@@ -14,22 +14,19 @@ declare global {
 const PDFJS_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'
 const PDFJS_WORKER = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
 
-// Fetches via Next.js rewrite proxy — avoids Gutenberg IP blocks
+// Fetches Gutenberg text via our server-side API route (avoids CORS/IP blocks)
 async function fetchGutenbergText(id: number): Promise<string> {
-  const urls = [
-    `/gutenberg-proxy/cache/epub/${id}/pg${id}.txt`,
-    `/gutenberg-proxy/files/${id}/${id}-0.txt`,
-    `/gutenberg-proxy/files/${id}/${id}.txt`,
-  ]
-  for (const url of urls) {
-    try {
-      const res = await fetch(url)
-      if (!res.ok) continue
-      const text = await res.text()
-      if (text.length > 500 && !text.trim().startsWith('<!')) return text
-    } catch {}
+  try {
+    const res = await fetch(`/library/gutenberg?id=${id}`)
+    if (!res.ok) throw new Error(`API returned ${res.status}`)
+    const text = await res.text()
+    if (text.length > 500 && !text.trim().startsWith('{') && !text.trim().startsWith('<!')) {
+      return text
+    }
+    throw new Error('Response too short or not plain text')
+  } catch (err) {
+    throw new Error(`Failed to load book: ${err}`)
   }
-  throw new Error('Failed to load')
 }
 
 // ============================================================

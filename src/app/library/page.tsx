@@ -33,13 +33,6 @@ interface ReadingProgress {
 }
 
 // ============================================================
-// Supabase config — your own PDFs
-// ============================================================
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
-const BUCKET = 'books'
-
-// ============================================================
 // Mood → genre map
 // ============================================================
 const MOOD_GENRES: Record<string, string[]> = {
@@ -152,38 +145,19 @@ export default function LibraryPage() {
   async function fetchMyBooks() {
     setIsLoadingMine(true)
     try {
-      const res = await fetch(
-        `${SUPABASE_URL}/storage/v1/object/list/${BUCKET}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${SUPABASE_KEY}`,
-            apikey: SUPABASE_KEY,
-          },
-          body: JSON.stringify({ prefix: '', limit: 100, offset: 0 }),
-        }
-      )
-      const files = await res.json()
-      if (!Array.isArray(files)) { setIsLoadingMine(false); return }
-
-      const books: Book[] = files
-        .filter((f: any) => f.name?.endsWith('.pdf'))
-        .map((f: any) => {
-          const name = f.name.replace(/\.pdf$/i, '').replace(/[-_]/g, ' ')
-          return {
-            id: `sb-${f.name}`,
-            title: name,
-            author: 'Your Library',
-            coverUrl: '',
-            source: 'supabase',
-            fileUrl: `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${f.name}`,
-            genre: 'mine',
-            description: 'From your personal collection.',
-          }
-        })
-      setMyBooks(books)
-    } catch {}
+      const res = await fetch('/api/library/books')
+      if (!res.ok) {
+        console.warn('Could not load personal books:', res.status)
+        setIsLoadingMine(false)
+        return
+      }
+      const data = await res.json()
+      if (Array.isArray(data.books)) {
+        setMyBooks(data.books as Book[])
+      }
+    } catch (err) {
+      console.warn('fetchMyBooks error:', err)
+    }
     setIsLoadingMine(false)
   }
 
