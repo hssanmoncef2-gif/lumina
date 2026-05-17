@@ -15,10 +15,14 @@ const PDFJS_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.mi
 const PDFJS_WORKER = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
 
 // ============================================================
-// Gutenberg → plain text URL
+// Gutenberg → plain text URL (via CORS proxy)
 // ============================================================
 function gutenbergTextUrl(id: number) {
-  return `https://www.gutenberg.org/files/${id}/${id}-0.txt`
+  // Try multiple URL patterns via corsproxy.io
+  return `https://corsproxy.io/?url=https://www.gutenberg.org/files/${id}/${id}-0.txt`
+}
+function gutenbergTextUrlFallback(id: number) {
+  return `https://corsproxy.io/?url=https://www.gutenberg.org/files/${id}/${id}.txt`
 }
 
 // ============================================================
@@ -97,10 +101,10 @@ export default function ReaderPage() {
     setIsTextMode(true)
     setIsLoading(true)
     try {
-      const res = await fetch(gutenbergTextUrl(id))
+      let res = await fetch(gutenbergTextUrl(id))
+      if (!res.ok) res = await fetch(gutenbergTextUrlFallback(id))
       if (!res.ok) throw new Error('Failed to fetch text')
       const text = await res.text()
-      // Split into ~500-char "pages" for progress tracking
       const chunks: string[] = []
       for (let i = 0; i < text.length; i += 2000) chunks.push(text.slice(i, i + 2000))
       setTextContent(text)
