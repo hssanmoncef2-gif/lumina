@@ -29,15 +29,15 @@ const MOOD_FILTERS = [
 ]
 
 const PLAYLIST_CARDS = [
-  { id: 'arabic-fire',    title: 'Arabic Fire 🔥',    desc: 'High-energy Arabic pop to ignite your night.',           emoji: '🔥',  grad: 'linear-gradient(135deg,rgba(239,68,68,0.65) 0%,rgba(245,158,11,0.6) 100%)',   moods: ['alive','joyful'] },
-  { id: 'arabic-soft',    title: 'Arabic Soft 🌸',    desc: 'Tender voices and warm melodies.',                       emoji: '🌸',  grad: 'linear-gradient(135deg,rgba(236,72,153,0.55) 0%,rgba(196,181,253,0.55) 100%)', moods: ['soft','healing','calm'] },
-  { id: 'arabic-nights',  title: 'Arabic Nights 🌙',  desc: 'Late nights and longing hearts.',                        emoji: '🌙',  grad: 'linear-gradient(135deg,rgba(139,92,246,0.65) 0%,rgba(30,27,75,0.8) 100%)',   moods: ['drifting','heavy'] },
-  { id: 'arabic-healing', title: 'Arabic Healing 🌿', desc: 'Songs that understand your heart.',                      emoji: '🌿',  grad: 'linear-gradient(135deg,rgba(34,197,94,0.5) 0%,rgba(6,182,212,0.5) 100%)',   moods: ['healing','soft'] },
-  { id: 'britney',        title: 'Britney Era ⚡',     desc: 'Early 2000s pop energy. Iconic, unapologetic, electric.', emoji: '⚡', grad: 'linear-gradient(135deg,rgba(234,179,8,0.65) 0%,rgba(249,115,22,0.6) 100%)',  moods: ['alive','joyful'] },
-  { id: 'bruno',          title: 'Bruno Vibes 🌟',     desc: 'Smooth, feel-good grooves.',                             emoji: '🌟',  grad: 'linear-gradient(135deg,rgba(251,191,36,0.55) 0%,rgba(234,179,8,0.5) 100%)',  moods: ['joyful','alive','soft'] },
-  { id: 'dystinct',       title: 'DYSTINCT Mode 👑',   desc: 'Arabic trap swagger. Walk tall, feel unstoppable.',      emoji: '👑',  grad: 'linear-gradient(135deg,rgba(79,70,229,0.7) 0%,rgba(139,92,246,0.65) 100%)',  moods: ['alive','joyful'] },
-  { id: 'french',         title: 'French Drift 🌧️',   desc: 'French sounds for rainy evenings.',                      emoji: '🌧️', grad: 'linear-gradient(135deg,rgba(99,102,241,0.65) 0%,rgba(59,130,246,0.55) 100%)', moods: ['soft','drifting','calm'] },
-  { id: 'queen',          title: 'Queen Catharsis 🎸', desc: 'For when you need to feel it all.',                      emoji: '🎸',  grad: 'linear-gradient(135deg,rgba(99,102,241,0.7) 0%,rgba(139,92,246,0.65) 100%)', moods: ['heavy','healing','alive'] },
+  { id: 'arabic-fire',    scIndex: 0,  title: 'Arabic Fire 🔥',    desc: 'High-energy Arabic pop to ignite your night.',           emoji: '🔥',  grad: 'linear-gradient(135deg,rgba(239,68,68,0.65) 0%,rgba(245,158,11,0.6) 100%)',   moods: ['alive','joyful'] },
+  { id: 'arabic-soft',    scIndex: 8,  title: 'Arabic Soft 🌸',    desc: 'Tender voices and warm melodies.',                       emoji: '🌸',  grad: 'linear-gradient(135deg,rgba(236,72,153,0.55) 0%,rgba(196,181,253,0.55) 100%)', moods: ['soft','healing','calm'] },
+  { id: 'arabic-nights',  scIndex: 13, title: 'Arabic Nights 🌙',  desc: 'Late nights and longing hearts.',                        emoji: '🌙',  grad: 'linear-gradient(135deg,rgba(139,92,246,0.65) 0%,rgba(30,27,75,0.8) 100%)',   moods: ['drifting','heavy'] },
+  { id: 'arabic-healing', scIndex: 18, title: 'Arabic Healing 🌿', desc: 'Songs that understand your heart.',                      emoji: '🌿',  grad: 'linear-gradient(135deg,rgba(34,197,94,0.5) 0%,rgba(6,182,212,0.5) 100%)',   moods: ['healing','soft'] },
+  { id: 'britney',        scIndex: 23, title: 'Britney Era ⚡',     desc: 'Early 2000s pop energy. Iconic, unapologetic, electric.', emoji: '⚡', grad: 'linear-gradient(135deg,rgba(234,179,8,0.65) 0%,rgba(249,115,22,0.6) 100%)',  moods: ['alive','joyful'] },
+  { id: 'bruno',          scIndex: 33, title: 'Bruno Vibes 🌟',     desc: 'Smooth, feel-good grooves.',                             emoji: '🌟',  grad: 'linear-gradient(135deg,rgba(251,191,36,0.55) 0%,rgba(234,179,8,0.5) 100%)',  moods: ['joyful','alive','soft'] },
+  { id: 'dystinct',       scIndex: 40, title: 'DYSTINCT Mode 👑',   desc: 'Arabic trap swagger. Walk tall, feel unstoppable.',      emoji: '👑',  grad: 'linear-gradient(135deg,rgba(79,70,229,0.7) 0%,rgba(139,92,246,0.65) 100%)',  moods: ['alive','joyful'] },
+  { id: 'french',         scIndex: 42, title: 'French Drift 🌧️',   desc: 'French sounds for rainy evenings.',                      emoji: '🌧️', grad: 'linear-gradient(135deg,rgba(99,102,241,0.65) 0%,rgba(59,130,246,0.55) 100%)', moods: ['soft','drifting','calm'] },
+  { id: 'queen',          scIndex: 47, title: 'Queen Catharsis 🎸', desc: 'For when you need to feel it all.',                      emoji: '🎸',  grad: 'linear-gradient(135deg,rgba(99,102,241,0.7) 0%,rgba(139,92,246,0.65) 100%)', moods: ['heavy','healing','alive'] },
 ]
 
 const AMBIENT_PRESETS = [
@@ -391,10 +391,10 @@ export default function MusicPage() {
               ? <div className="empty"><div className="empty-ico">🎵</div><p className="empty-txt">No playlists for this mood.</p></div>
               : <div className="grid">
                   {filtered.map((pl, i) => {
-                    const active = isPlaying && nowPlaying !== null && i === 0
+                    const active = isPlaying && nowPlaying !== null && i === 0 && pl.scIndex === 0
                     return (
                       <div key={pl.id} className={`pl${active?' now':''}`}
-                        style={{background:pl.grad}} onClick={() => playPlaylist(i)}>
+                        style={{background:pl.grad}} onClick={() => playPlaylist(pl.scIndex)}>
                         {active && <div className="badge">Playing</div>}
                         <span className="pl-ico">{pl.emoji}</span>
                         <p className="pl-title">{pl.title}</p>
