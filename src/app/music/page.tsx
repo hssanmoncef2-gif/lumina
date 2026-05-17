@@ -15,7 +15,7 @@ declare global {
 // ============================================================
 // Constants
 // ============================================================
-const SC_PLAYLIST_URL = 'https://soundcloud.com/moncef-hssan/sets/lumina-radio'
+const SC_PLAYLIST_URL = 'https://soundcloud.com/moncef-hssan/sets/lumina-radio/s-VqAXuaXQGUK'
 
 const MOOD_FILTERS = [
   { id: 'all',      label: 'All',     emoji: '✦' },
