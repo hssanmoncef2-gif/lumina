@@ -1,479 +1,662 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import AtmosphericBackground from '@/components/layout/AtmosphericBackground'
-import BottomNav from '@/components/layout/BottomNav'
-import PlaylistCard from '@/components/music/PlaylistCard'
-import NowPlayingBar from '@/components/music/NowPlayingBar'
-import MusicPlayer from '@/components/music/MusicPlayer'
-import { usePlayer } from '@/hooks/usePlayer'
-import { useLuminaStore } from '@/store/useAppStore'
-import { PLAYLISTS, MOOD_PLAYLIST_MAP } from '@/lib/music/playlistData'
-import { AMBIENT_PRESETS, getAmbientEngine } from '@/lib/music/ambientEngine'
-import type { Playlist } from '@/types'
-import type { AmbientPreset } from '@/lib/music/ambientEngine'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 
 // ============================================================
-// /music — Enhanced music + ambient soundscape hub
+// Types
 // ============================================================
+interface Track {
+  id: string
+  title: string
+  artist: string
+  duration: number
+  mood: string[]
+}
 
-const MOOD_FILTER_OPTIONS = [
-  { id: 'all',      label: 'All',      emoji: '✦',  color: 'rgba(255,255,255,0.7)' },
-  { id: 'alive',    label: 'Energy',   emoji: '⚡', color: 'rgba(52,211,153,0.9)'  },
-  { id: 'joyful',   label: 'Joyful',   emoji: '✨', color: 'rgba(251,191,36,0.9)'  },
-  { id: 'soft',     label: 'Tender',   emoji: '🌸', color: 'rgba(249,168,212,0.9)' },
-  { id: 'drifting', label: 'Adrift',   emoji: '🌙', color: 'rgba(129,140,248,0.9)' },
-  { id: 'healing',  label: 'Healing',  emoji: '🌱', color: 'rgba(134,239,172,0.9)' },
-  { id: 'heavy',    label: 'Release',  emoji: '🌧', color: 'rgba(99,102,241,0.9)'  },
-  { id: 'calm',     label: 'Still',    emoji: '🌊', color: 'rgba(14,165,233,0.9)'  },
-  { id: 'anxious',  label: 'Ground',   emoji: '🌀', color: 'rgba(251,146,60,0.9)'  },
+interface Playlist {
+  id: string
+  title: string
+  description: string
+  emoji: string
+  gradient: string
+  tracks: Track[]
+  moods: string[]
+}
+
+// ============================================================
+// Data
+// ============================================================
+const PLAYLISTS: Playlist[] = [
+  {
+    id: 'pl-arabic-fire',
+    title: 'Arabic Fire 🔥',
+    description: 'High-energy Arabic pop to ignite your night.',
+    emoji: '🔥',
+    gradient: 'linear-gradient(135deg, rgba(239,68,68,0.5) 0%, rgba(245,158,11,0.45) 100%)',
+    moods: ['alive', 'joyful'],
+    tracks: [
+      { id: 'ap-01', title: "Am Bemzah Ma'ak", artist: 'Najwa Karam', duration: 225, mood: ['alive','joyful'] },
+      { id: 'ap-02', title: 'Degou El Toboul', artist: 'Myriam Fares', duration: 210, mood: ['alive','joyful'] },
+      { id: 'ap-03', title: 'Haklek Rahtak', artist: 'Myriam Fares', duration: 198, mood: ['alive','joyful'] },
+      { id: 'ap-04', title: 'Maalesh', artist: 'Myriam Fares', duration: 204, mood: ['alive','joyful'] },
+      { id: 'ap-05', title: 'Atlah', artist: 'Myriam Fares', duration: 217, mood: ['alive','joyful'] },
+      { id: 'ap-06', title: 'Boom Boom', artist: 'Hind Ziadi', duration: 190, mood: ['alive','joyful'] },
+      { id: 'ap-07', title: 'Mesaytara', artist: 'Lamis Kan', duration: 208, mood: ['alive','joyful'] },
+      { id: 'ap-08', title: 'Motamakkina', artist: 'Lamis Kan', duration: 215, mood: ['alive','joyful'] },
+      { id: 'ap-09', title: "Enta Bet'oul Eih", artist: 'Myriam Fares', duration: 222, mood: ['alive','joyful'] },
+      { id: 'ap-10', title: 'Badna Nwalee El Jaw', artist: 'Nancy Ajram', duration: 200, mood: ['alive','joyful'] },
+    ],
+  },
+  {
+    id: 'pl-arabic-soft',
+    title: 'Arabic Soft 🌸',
+    description: 'Tender voices and warm melodies.',
+    emoji: '🌸',
+    gradient: 'linear-gradient(135deg, rgba(236,72,153,0.4) 0%, rgba(196,181,253,0.4) 100%)',
+    moods: ['soft', 'healing', 'calm'],
+    tracks: [
+      { id: 'as-01', title: 'Sho Baddo', artist: 'Yara', duration: 228, mood: ['soft','healing'] },
+      { id: 'as-02', title: 'Ma Yhimmak', artist: 'Yara', duration: 215, mood: ['soft','calm'] },
+      { id: 'as-03', title: 'Shey Ghareeb', artist: 'Nour Helou', duration: 232, mood: ['soft','drifting'] },
+      { id: 'as-04', title: 'Ma Tegi Hena', artist: 'Nancy Ajram', duration: 218, mood: ['soft','calm'] },
+      { id: 'as-05', title: "Tla'ayna", artist: 'Maritta Hallani', duration: 225, mood: ['soft','healing'] },
+      { id: 'as-06', title: "Esma'ny", artist: 'Carole Samaha', duration: 242, mood: ['soft','healing'] },
+      { id: 'as-07', title: 'Ettala Fia', artist: 'Carole Samaha', duration: 236, mood: ['soft','calm'] },
+      { id: 'as-08', title: 'Eh Eh', artist: 'Sherine', duration: 210, mood: ['soft','joyful'] },
+      { id: 'as-09', title: 'Howa Da', artist: 'Sherine', duration: 220, mood: ['soft','healing'] },
+      { id: 'as-10', title: 'Lawn Ouyounak', artist: 'Nancy Ajram', duration: 235, mood: ['soft','calm'] },
+    ],
+  },
+  {
+    id: 'pl-arabic-nights',
+    title: 'Arabic Nights 🌙',
+    description: 'Late nights and longing hearts.',
+    emoji: '🌙',
+    gradient: 'linear-gradient(135deg, rgba(139,92,246,0.5) 0%, rgba(30,27,75,0.65) 100%)',
+    moods: ['drifting', 'heavy'],
+    tracks: [
+      { id: 'an-01', title: 'Khalini Shoufak', artist: 'Najwa Karam', duration: 258, mood: ['drifting','soft'] },
+      { id: 'an-02', title: 'Allah Yeshghelo Balo', artist: 'Najwa Karam', duration: 245, mood: ['drifting','heavy'] },
+      { id: 'an-03', title: 'Ma Fi Noum', artist: 'Najwa Karam', duration: 262, mood: ['drifting','heavy'] },
+      { id: 'an-04', title: 'Eidak', artist: 'Najwa Karam', duration: 248, mood: ['drifting','soft'] },
+      { id: 'an-05', title: "Ta'a Khabyak", artist: 'Najwa Karam', duration: 255, mood: ['drifting','heavy'] },
+      { id: 'an-06', title: 'Fakerne', artist: 'Haifa Wehbe', duration: 240, mood: ['drifting','heavy'] },
+      { id: 'an-07', title: 'Enta Tani', artist: 'Haifa Wehbe', duration: 235, mood: ['drifting','soft'] },
+      { id: 'an-08', title: 'El Wawa', artist: 'Haifa Wehbe', duration: 228, mood: ['drifting','joyful'] },
+      { id: 'an-09', title: 'Rajab', artist: 'Haifa Wehbe', duration: 232, mood: ['drifting','alive'] },
+      { id: 'an-10', title: 'Talqa', artist: 'Ahlam', duration: 250, mood: ['drifting','heavy'] },
+    ],
+  },
+  {
+    id: 'pl-arabic-healing',
+    title: 'Arabic Healing 🌿',
+    description: 'Songs that understand your heart.',
+    emoji: '🌿',
+    gradient: 'linear-gradient(135deg, rgba(34,197,94,0.38) 0%, rgba(6,182,212,0.38) 100%)',
+    moods: ['healing', 'soft'],
+    tracks: [
+      { id: 'ah-01', title: 'Namet Nenna', artist: 'Ruby', duration: 230, mood: ['healing','soft'] },
+      { id: 'ah-02', title: 'Alby Plastic', artist: 'Ruby', duration: 215, mood: ['healing','alive'] },
+      { id: 'ah-03', title: "3 Sa'at Metwasla", artist: 'Ruby', duration: 240, mood: ['healing','drifting'] },
+      { id: 'ah-04', title: 'Hetta Tanya', artist: 'Ruby', duration: 225, mood: ['healing','soft'] },
+      { id: 'ah-05', title: 'Ya Tabtab Wa Dallaa', artist: 'Nancy Ajram', duration: 245, mood: ['healing','joyful'] },
+      { id: 'ah-06', title: 'Ah W Noss', artist: 'Nancy Ajram', duration: 220, mood: ['healing','soft'] },
+      { id: 'ah-07', title: 'Aktar Shewaya', artist: 'Maya Diab', duration: 218, mood: ['healing','soft'] },
+      { id: 'ah-08', title: 'Khalani', artist: 'Myriam Fares', duration: 208, mood: ['healing','alive'] },
+    ],
+  },
+  {
+    id: 'pl-britney',
+    title: 'Britney Era ⚡',
+    description: 'Early 2000s pop energy. Iconic, unapologetic, electric.',
+    emoji: '⚡',
+    gradient: 'linear-gradient(135deg, rgba(234,179,8,0.5) 0%, rgba(249,115,22,0.45) 100%)',
+    moods: ['alive', 'joyful'],
+    tracks: [
+      { id: 'bp-01', title: '...Baby One More Time', artist: 'Britney Spears', duration: 211, mood: ['alive','joyful'] },
+      { id: 'bp-02', title: "Oops!... I Did It Again", artist: 'Britney Spears', duration: 204, mood: ['alive','joyful'] },
+      { id: 'bp-03', title: 'Toxic', artist: 'Britney Spears', duration: 198, mood: ['alive'] },
+      { id: 'bp-04', title: 'Gimme More', artist: 'Britney Spears', duration: 240, mood: ['alive'] },
+      { id: 'bp-05', title: 'Womanizer', artist: 'Britney Spears', duration: 216, mood: ['alive','joyful'] },
+      { id: 'bp-06', title: 'Hold It Against Me', artist: 'Britney Spears', duration: 228, mood: ['alive'] },
+      { id: 'bp-07', title: 'Till the World Ends', artist: 'Britney Spears', duration: 234, mood: ['alive','joyful'] },
+      { id: 'bp-08', title: 'Work Bitch', artist: 'Britney Spears', duration: 222, mood: ['alive'] },
+      { id: 'bp-09', title: 'Criminal', artist: 'Britney Spears', duration: 225, mood: ['drifting','soft'] },
+      { id: 'bp-10', title: 'Everytime', artist: 'Britney Spears', duration: 238, mood: ['heavy','soft'] },
+    ],
+  },
+  {
+    id: 'pl-bruno',
+    title: 'Bruno Vibes 🌟',
+    description: 'Smooth, feel-good grooves.',
+    emoji: '🌟',
+    gradient: 'linear-gradient(135deg, rgba(251,191,36,0.4) 0%, rgba(234,179,8,0.35) 100%)',
+    moods: ['joyful', 'alive', 'soft'],
+    tracks: [
+      { id: 'bm-01', title: "That's What I Like", artist: 'Bruno Mars', duration: 206, mood: ['joyful','alive'] },
+      { id: 'bm-02', title: 'Treasure', artist: 'Bruno Mars', duration: 173, mood: ['joyful','alive'] },
+      { id: 'bm-03', title: 'Uptown Funk', artist: 'Bruno Mars', duration: 270, mood: ['joyful','alive'] },
+      { id: 'bm-04', title: 'Grenade', artist: 'Bruno Mars', duration: 222, mood: ['heavy','healing'] },
+      { id: 'bm-05', title: 'Just the Way You Are', artist: 'Bruno Mars', duration: 220, mood: ['soft','joyful'] },
+      { id: 'bm-06', title: 'Count On Me', artist: 'Bruno Mars', duration: 193, mood: ['soft','healing'] },
+      { id: 'bm-07', title: 'Locked Out of Heaven', artist: 'Bruno Mars', duration: 233, mood: ['joyful','alive'] },
+      { id: 'bm-08', title: 'Versace on the Floor', artist: 'Bruno Mars', duration: 274, mood: ['soft','drifting'] },
+    ],
+  },
+  {
+    id: 'pl-dystinct',
+    title: 'DYSTINCT Mode 👑',
+    description: 'Arabic trap swagger. Walk tall, feel unstoppable.',
+    emoji: '👑',
+    gradient: 'linear-gradient(135deg, rgba(79,70,229,0.55) 0%, rgba(139,92,246,0.5) 100%)',
+    moods: ['alive', 'joyful'],
+    tracks: [
+      { id: 'dy-01', title: 'BABABA WORLD', artist: 'DYSTINCT', duration: 188, mood: ['alive','joyful'] },
+      { id: 'dy-02', title: 'Business', artist: 'DYSTINCT', duration: 195, mood: ['alive'] },
+      { id: 'dy-03', title: 'LAYALI', artist: 'DYSTINCT', duration: 202, mood: ['drifting','alive'] },
+      { id: 'dy-04', title: 'Tek Tek', artist: 'DYSTINCT', duration: 191, mood: ['alive','joyful'] },
+      { id: 'dy-05', title: 'YAMA', artist: 'DYSTINCT', duration: 198, mood: ['alive','soft'] },
+    ],
+  },
+  {
+    id: 'pl-french-drift',
+    title: 'French Drift 🌧️',
+    description: 'French & international sounds for rainy evenings.',
+    emoji: '🌧️',
+    gradient: 'linear-gradient(135deg, rgba(99,102,241,0.5) 0%, rgba(59,130,246,0.4) 100%)',
+    moods: ['soft', 'drifting', 'calm'],
+    tracks: [
+      { id: 'fr-01', title: 'Petite Maison', artist: 'bba', duration: 210, mood: ['soft','drifting'] },
+      { id: 'fr-02', title: "J'avoue", artist: 'Linh', duration: 225, mood: ['soft','calm'] },
+      { id: 'fr-03', title: 'Les Mots', artist: 'Lolo Zouaï & Dinos', duration: 238, mood: ['drifting','soft'] },
+      { id: 'fr-04', title: 'Conduire', artist: 'Louane', duration: 220, mood: ['soft','healing'] },
+      { id: 'fr-05', title: 'ça pik un peu quand même', artist: 'miki', duration: 195, mood: ['soft','drifting'] },
+      { id: 'fr-06', title: 'coeur maladroit', artist: 'Marine', duration: 215, mood: ['heavy','soft'] },
+      { id: 'fr-07', title: 'la boss', artist: 'marguerite', duration: 200, mood: ['joyful','alive'] },
+      { id: 'fr-08', title: 'Pour en parler', artist: 'Lynda & Franglish', duration: 228, mood: ['soft','healing'] },
+      { id: 'fr-09', title: 'Viens on essaie', artist: 'Vitaa & Julien Doré', duration: 242, mood: ['soft','calm'] },
+      { id: 'fr-10', title: 'Verano', artist: 'Ridsa', duration: 210, mood: ['joyful','alive'] },
+    ],
+  },
+  {
+    id: 'pl-queen',
+    title: 'Queen Catharsis 🎸',
+    description: "For when you need to feel it all.",
+    emoji: '🎸',
+    gradient: 'linear-gradient(135deg, rgba(99,102,241,0.55) 0%, rgba(139,92,246,0.5) 100%)',
+    moods: ['heavy', 'healing', 'alive'],
+    tracks: [
+      { id: 'cl-01', title: 'Bohemian Rhapsody', artist: 'Queen', duration: 354, mood: ['heavy','healing','alive'] },
+      { id: 'cl-02', title: "Don't Stop Me Now", artist: 'Queen', duration: 209, mood: ['alive','joyful'] },
+      { id: 'cl-03', title: 'We Will Rock You', artist: 'Queen', duration: 121, mood: ['alive'] },
+      { id: 'cl-04', title: 'We Are the Champions', artist: 'Queen', duration: 179, mood: ['alive','healing'] },
+      { id: 'cl-05', title: 'Under Pressure', artist: 'Queen', duration: 248, mood: ['heavy','healing'] },
+      { id: 'cl-06', title: 'Somebody to Love', artist: 'Queen', duration: 276, mood: ['heavy','healing'] },
+      { id: 'cl-07', title: 'Radio Ga Ga', artist: 'Queen', duration: 344, mood: ['alive','drifting'] },
+      { id: 'cl-08', title: 'I Want to Break Free', artist: 'Queen', duration: 259, mood: ['alive','joyful'] },
+      { id: 'cl-09', title: 'The Show Must Go On', artist: 'Queen', duration: 262, mood: ['heavy','alive'] },
+    ],
+  },
 ]
 
-// ---- AI Mood Input ----
-function AIMoodInput({ onMoodDetected }: { onMoodDetected: (mood: any) => void }) {
-  const [text, setText] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState<any>(null)
-  const [expanded, setExpanded] = useState(false)
+const MOOD_FILTERS = [
+  { id: 'all',      label: 'All',     emoji: '✦' },
+  { id: 'alive',    label: 'Energy',  emoji: '⚡' },
+  { id: 'joyful',   label: 'Joyful',  emoji: '✨' },
+  { id: 'soft',     label: 'Tender',  emoji: '🌸' },
+  { id: 'drifting', label: 'Adrift',  emoji: '🌙' },
+  { id: 'healing',  label: 'Healing', emoji: '🌱' },
+  { id: 'heavy',    label: 'Release', emoji: '🌧' },
+  { id: 'calm',     label: 'Still',   emoji: '🌊' },
+]
 
-  const analyze = useCallback(async () => {
-    if (!text.trim() || loading) return
-    setLoading(true)
-    try {
-      const res = await fetch('/api/mood-ai', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text }),
-      })
-      const data = await res.json()
-      setResult(data)
-      onMoodDetected(data)
-    } catch { /* silent */ } finally {
-      setLoading(false)
-    }
-  }, [text, loading, onMoodDetected])
-
-  return (
-    <div className="px-5 mb-5">
-      <motion.div
-        layout
-        className="rounded-[20px] overflow-hidden"
-        style={{
-          background: 'rgba(255,255,255,0.04)',
-          border: '0.5px solid rgba(255,255,255,0.1)',
-          backdropFilter: 'blur(16px)',
-        }}
-      >
-        <motion.button
-          className="w-full flex items-center gap-3 px-4 py-3.5"
-          onClick={() => setExpanded(e => !e)}
-          whileTap={{ scale: 0.99 }}
-        >
-          <div className="w-7 h-7 rounded-full flex items-center justify-center text-sm flex-shrink-0"
-            style={{ background: 'rgba(139,92,246,0.2)', border: '0.5px solid rgba(139,92,246,0.3)' }}>
-            ✦
-          </div>
-          <div className="flex-1 text-left">
-            <p className="text-[12px] font-medium text-white/80">
-              {result ? `Mood detected: ${result.primaryMood}` : 'How are you feeling right now?'}
-            </p>
-            <p className="text-[10px] text-white/35 mt-0.5">
-              {result ? result.insight : 'Describe it — AI will find your sound'}
-            </p>
-          </div>
-          <motion.span animate={{ rotate: expanded ? 180 : 0 }} className="text-white/30 text-xs">▾</motion.span>
-        </motion.button>
-
-        <AnimatePresence>
-          {expanded && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="overflow-hidden"
-            >
-              <div className="px-4 pb-4 space-y-3">
-                <textarea
-                  value={text}
-                  onChange={e => setText(e.target.value)}
-                  placeholder={`"exhausted but still here"\n"anxious and can't slow down"\n"feeling light today"…`}
-                  className="w-full resize-none rounded-[14px] p-3 text-[13px] text-white/80 placeholder-white/25 outline-none"
-                  style={{
-                    background: 'rgba(255,255,255,0.06)',
-                    border: '0.5px solid rgba(255,255,255,0.1)',
-                    minHeight: '76px',
-                    fontFamily: 'inherit',
-                  }}
-                  onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) analyze() }}
-                />
-
-                <motion.button
-                  whileTap={{ scale: 0.97 }}
-                  onClick={analyze}
-                  disabled={!text.trim() || loading}
-                  className="w-full py-2.5 rounded-[14px] text-[13px] font-medium transition-all"
-                  style={{
-                    background: text.trim() && !loading
-                      ? 'linear-gradient(135deg, rgba(139,92,246,0.5), rgba(99,102,241,0.6))'
-                      : 'rgba(255,255,255,0.05)',
-                    border: '0.5px solid rgba(255,255,255,0.1)',
-                    color: text.trim() ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.3)',
-                  }}
-                >
-                  {loading ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <motion.span animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}>⟳</motion.span>
-                      Reading your energy…
-                    </span>
-                  ) : 'Find my sound →'}
-                </motion.button>
-
-                <AnimatePresence>
-                  {result && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0 }}
-                      className="rounded-[14px] p-3 space-y-2"
-                      style={{ background: 'rgba(139,92,246,0.1)', border: '0.5px solid rgba(139,92,246,0.2)' }}
-                    >
-                      <p className="text-[12px] text-purple-200/80 italic leading-relaxed">"{result.insight}"</p>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-medium"
-                          style={{ background: 'rgba(139,92,246,0.2)', color: 'rgba(196,181,253,0.9)' }}>
-                          {result.primaryMood}
-                        </span>
-                        {result.musicMood && <><span className="text-[10px] text-white/25">·</span>
-                        <span className="text-[10px] text-white/40">{result.musicMood}</span></>}
-                        {result.ambientSound && <><span className="text-[10px] text-white/25">·</span>
-                        <span className="text-[10px] text-white/40">🔮 {result.ambientSound?.replace(/-/g, ' ')}</span></>}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
-    </div>
-  )
+function fmt(s: number) {
+  return `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`
 }
 
-// ---- Ambient Soundscape Section ----
-function AmbientSection() {
-  const [activePreset, setActivePreset] = useState<AmbientPreset | null>(null)
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [volume, setVolume] = useState(0.4)
-  const [engine, setEngine] = useState<any>(null)
-  const [started, setStarted] = useState(false)
-
-  // Load engine client-side only
-  useEffect(() => {
-    const eng = getAmbientEngine()
-    setEngine(eng)
-  }, [])
-
-  const togglePreset = useCallback(async (preset: AmbientPreset) => {
-    if (!engine) return
-    if (activePreset === preset && isPlaying) {
-      await engine.stop()
-      setIsPlaying(false)
-      setActivePreset(null)
-    } else {
-      setActivePreset(preset)
-      setIsPlaying(true)
-      setStarted(true)
-      await engine.play(preset, volume)
-    }
-  }, [engine, activePreset, isPlaying, volume])
-
-  const handleVolume = useCallback((v: number) => {
-    setVolume(v)
-    engine?.setVolume(v)
-  }, [engine])
-
-  return (
-    <div className="px-5 mb-6">
-      <div className="flex items-center justify-between mb-3">
-        <div>
-          <p className="text-[10px] uppercase tracking-[0.12em] text-white/30 mb-0.5">Ambient Sounds</p>
-          <p className="text-[12px] text-white/45 font-light">Synthesized in your browser · no downloads</p>
-        </div>
-        {isPlaying && (
-          <div className="flex items-center gap-2">
-            <span className="text-[9px] text-white/30 uppercase tracking-wider">vol</span>
-            <input
-              type="range" min={0} max={1} step={0.05} value={volume}
-              onChange={e => handleVolume(parseFloat(e.target.value))}
-              className="w-16"
-              style={{ accentColor: '#a78bfa' }}
-            />
-          </div>
-        )}
-      </div>
-
-      <div className="grid grid-cols-3 gap-2">
-        {AMBIENT_PRESETS.map((preset, i) => {
-          const active = activePreset === preset.id && isPlaying
-          return (
-            <motion.button
-              key={preset.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.04 }}
-              whileTap={{ scale: 0.94 }}
-              onClick={() => togglePreset(preset.id)}
-              className="relative flex flex-col items-center gap-1.5 py-3 px-2 rounded-[16px] transition-all duration-300"
-              style={{
-                background: active ? preset.color.replace('0.5)', '0.15)') : 'rgba(255,255,255,0.04)',
-                border: `0.5px solid ${active ? preset.color : 'rgba(255,255,255,0.08)'}`,
-              }}
-            >
-              {active && (
-                <motion.div
-                  animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0, 0.3] }}
-                  transition={{ duration: 2.5, repeat: Infinity }}
-                  className="absolute inset-0 rounded-[16px]"
-                  style={{ background: preset.color.replace('0.5)', '0.1)') }}
-                />
-              )}
-              <span className="text-xl relative z-10">{preset.emoji}</span>
-              <span className="text-[10px] font-medium relative z-10 text-center leading-tight"
-                style={{ color: active ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)' }}>
-                {preset.label}
-              </span>
-              {active && (
-                <div className="flex gap-0.5 relative z-10 items-end h-3">
-                  {[0,1,2].map(j => (
-                    <motion.div key={j} className="w-[3px] rounded-sm"
-                      style={{ background: 'rgba(255,255,255,0.5)' }}
-                      animate={{ height: [2, 8 + j * 3, 2] }}
-                      transition={{ duration: 0.7 + j * 0.2, repeat: Infinity, delay: j * 0.15 }}
-                    />
-                  ))}
-                </div>
-              )}
-            </motion.button>
-          )
-        })}
-      </div>
-      {!started && (
-        <p className="text-[10px] text-white/20 text-center mt-3">
-          Tap to start · works offline · no audio files needed
-        </p>
-      )}
-    </div>
-  )
-}
-
-// ---- Main Page ----
+// ============================================================
+// Main Page
+// ============================================================
 export default function MusicPage() {
-  const currentMood = useLuminaStore(s => s.currentMood)
-  const { player, playPlaylist, togglePlay } = usePlayer()
-
+  const router = useRouter()
   const [moodFilter, setMoodFilter] = useState('all')
-  const [showPlayer, setShowPlayer] = useState(false)
-  const [expandedPlaylist, setExpandedPlaylist] = useState<Playlist | null>(null)
-  const [activeTab, setActiveTab] = useState<'playlists' | 'ambient'>('playlists')
+  const [activePlaylist, setActivePlaylist] = useState<Playlist | null>(null)
+  const [currentTrack, setCurrentTrack] = useState<Track | null>(null)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [progress, setProgress] = useState(0)
+  const [showSheet, setShowSheet] = useState<Playlist | null>(null)
+  const intervalRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Simulate progress when "playing"
+  useEffect(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current)
+    if (isPlaying && currentTrack) {
+      intervalRef.current = setInterval(() => {
+        setProgress(p => {
+          if (p >= 1) {
+            // Auto-advance to next track
+            if (activePlaylist) {
+              const idx = activePlaylist.tracks.findIndex(t => t.id === currentTrack.id)
+              const next = activePlaylist.tracks[(idx + 1) % activePlaylist.tracks.length]
+              setCurrentTrack(next)
+              return 0
+            }
+            return 0
+          }
+          return p + 1 / (currentTrack.duration * 5)
+        })
+      }, 200)
+    }
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
+  }, [isPlaying, currentTrack, activePlaylist])
 
   const filteredPlaylists = moodFilter === 'all'
     ? PLAYLISTS
-    : (MOOD_PLAYLIST_MAP[moodFilter] ?? [])
-        .map(id => PLAYLISTS.find(p => p.id === id))
-        .filter(Boolean) as typeof PLAYLISTS
+    : PLAYLISTS.filter(pl => pl.moods.includes(moodFilter))
 
-  const activePlaylistId = player.currentTrack
-    ? PLAYLISTS.find(pl => pl.tracks.some(t => t.id === player.currentTrack?.id))?.id
-    : null
+  const handlePlayPlaylist = useCallback((pl: Playlist, trackIndex = 0) => {
+    if (activePlaylist?.id === pl.id && isPlaying) {
+      setIsPlaying(false)
+    } else {
+      setActivePlaylist(pl)
+      setCurrentTrack(pl.tracks[trackIndex])
+      setIsPlaying(true)
+      setProgress(0)
+    }
+  }, [activePlaylist, isPlaying])
 
-  const handlePlay = useCallback((playlist: Playlist) => {
-    if (activePlaylistId === playlist.id) togglePlay()
-    else playPlaylist(playlist)
-  }, [activePlaylistId, togglePlay, playPlaylist])
+  const handleToggle = useCallback(() => setIsPlaying(p => !p), [])
 
-  const handleMoodDetected = useCallback((data: any) => {
-    if (data?.primaryMood) setMoodFilter(data.primaryMood)
-  }, [])
+  const handleNext = useCallback(() => {
+    if (!activePlaylist || !currentTrack) return
+    const idx = activePlaylist.tracks.findIndex(t => t.id === currentTrack.id)
+    setCurrentTrack(activePlaylist.tracks[(idx + 1) % activePlaylist.tracks.length])
+    setProgress(0)
+  }, [activePlaylist, currentTrack])
+
+  const handlePrev = useCallback(() => {
+    if (!activePlaylist || !currentTrack) return
+    const idx = activePlaylist.tracks.findIndex(t => t.id === currentTrack.id)
+    setCurrentTrack(activePlaylist.tracks[(idx - 1 + activePlaylist.tracks.length) % activePlaylist.tracks.length])
+    setProgress(0)
+  }, [activePlaylist, currentTrack])
+
+  const isActivePlaylist = (pl: Playlist) => activePlaylist?.id === pl.id && isPlaying
 
   return (
-    <main className="relative min-h-dvh overflow-hidden bg-lumina-void">
-      <AtmosphericBackground mood={currentMood} />
+    <>
+      <style>{`
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        .music-page {
+          min-height: 100dvh;
+          background: linear-gradient(180deg, #080612 0%, #0e0a1f 50%, #0a0f1e 100%);
+          font-family: 'Sora', 'Inter', sans-serif;
+          color: white;
+          overflow-x: hidden;
+          padding-bottom: 160px;
+        }
+        .safe-top { height: env(safe-area-inset-top, 16px); }
 
-      <AnimatePresence>
-        {showPlayer && <MusicPlayer onClose={() => setShowPlayer(false)} />}
-      </AnimatePresence>
+        /* Header */
+        .header { padding: 20px 20px 16px; }
+        .header-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: rgba(255,255,255,0.3); margin-bottom: 4px; }
+        .header-title { font-size: 26px; font-weight: 600; background: linear-gradient(135deg, #e2d9f3, #a78bfa, #f9a8d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .header-sub { font-size: 13px; font-weight: 300; color: rgba(255,255,255,0.3); margin-top: 6px; }
 
-      <div className="relative z-content flex flex-col min-h-dvh pb-36">
+        /* Mood filters */
+        .filters-wrap { padding: 0 20px 16px; overflow-x: auto; scrollbar-width: none; }
+        .filters-wrap::-webkit-scrollbar { display: none; }
+        .filters-row { display: flex; gap: 8px; white-space: nowrap; }
+        .filter-btn {
+          display: inline-flex; align-items: center; gap: 5px;
+          padding: 7px 14px; border-radius: 999px; border: 0.5px solid rgba(255,255,255,0.08);
+          background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.35);
+          font-size: 11px; font-weight: 500; cursor: pointer; transition: all 0.2s;
+          font-family: inherit;
+        }
+        .filter-btn.active {
+          background: rgba(139,92,246,0.22); border-color: rgba(139,92,246,0.45);
+          color: rgba(196,181,253,0.95);
+        }
+
+        /* Grid */
+        .grid-wrap { padding: 0 16px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        /* Playlist card */
+        .pl-card {
+          border-radius: 20px; padding: 16px; cursor: pointer;
+          border: 0.5px solid rgba(255,255,255,0.1);
+          backdrop-filter: blur(12px); position: relative; overflow: hidden;
+          transition: transform 0.2s, box-shadow 0.2s;
+          -webkit-tap-highlight-color: transparent;
+        }
+        .pl-card:active { transform: scale(0.96); }
+        .pl-card.active-pl { box-shadow: 0 0 24px rgba(139,92,246,0.3); border-color: rgba(139,92,246,0.4); }
+        .pl-emoji { font-size: 28px; margin-bottom: 10px; display: block; }
+        .pl-title { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.9); line-height: 1.3; margin-bottom: 4px; }
+        .pl-count { font-size: 10px; color: rgba(255,255,255,0.35); margin-bottom: 12px; }
+        .pl-desc { font-size: 10px; color: rgba(255,255,255,0.35); line-height: 1.5; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .pl-footer { display: flex; align-items: center; justify-content: space-between; }
+        .pl-play-btn {
+          width: 32px; height: 32px; border-radius: 50%;
+          background: rgba(255,255,255,0.15); border: 0.5px solid rgba(255,255,255,0.2);
+          display: flex; align-items: center; justify-content: center;
+          font-size: 11px; cursor: pointer; transition: background 0.2s;
+          color: white;
+        }
+        .pl-play-btn.playing { background: rgba(139,92,246,0.5); border-color: rgba(139,92,246,0.6); }
+        .pl-open-btn {
+          font-size: 9px; color: rgba(255,255,255,0.3); background: none; border: none;
+          cursor: pointer; padding: 4px 8px; border-radius: 8px;
+          font-family: inherit; text-transform: uppercase; letter-spacing: 0.08em;
+          transition: color 0.2s;
+        }
+        .pl-open-btn:hover { color: rgba(255,255,255,0.6); }
+
+        /* Bars visualizer */
+        .mini-bars { display: flex; gap: 2px; align-items: flex-end; height: 14px; }
+        .mini-bar { width: 3px; border-radius: 2px; background: rgba(167,139,250,0.6); transition: height 0.3s; }
+        @keyframes barDance { 0%,100%{height:3px} 50%{height:12px} }
+        .mini-bar.playing { animation: barDance 0.8s ease-in-out infinite; }
+        .mini-bar:nth-child(2).playing { animation-delay: 0.15s; }
+        .mini-bar:nth-child(3).playing { animation-delay: 0.3s; }
+
+        /* Empty state */
+        .empty { text-align: center; padding: 60px 20px; }
+        .empty p:first-child { font-size: 32px; margin-bottom: 8px; }
+        .empty p:last-child { font-size: 13px; color: rgba(255,255,255,0.3); }
+
+        /* Bottom nav */
+        .bottom-nav {
+          position: fixed; bottom: 0; left: 0; right: 0; z-index: 30;
+          background: rgba(8,6,18,0.9); border-top: 0.5px solid rgba(255,255,255,0.07);
+          backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+          display: flex; justify-content: space-around;
+          padding: 10px 8px calc(12px + env(safe-area-inset-bottom, 0px));
+        }
+        .nav-btn {
+          display: flex; flex-direction: column; align-items: center; gap: 3px;
+          background: none; border: none; cursor: pointer; padding: 4px 12px;
+          border-radius: 14px; transition: background 0.2s; font-family: inherit;
+          -webkit-tap-highlight-color: transparent;
+        }
+        .nav-btn.active { background: rgba(139,92,246,0.12); }
+        .nav-icon { font-size: 18px; }
+        .nav-label { font-size: 8px; text-transform: uppercase; letter-spacing: 0.08em; }
+
+        /* Now playing bar */
+        .now-bar {
+          position: fixed; left: 0; right: 0; z-index: 25;
+          bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+          padding: 0 12px 8px;
+          animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp { from { transform: translateY(80px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+        .now-bar-inner {
+          border-radius: 18px; overflow: hidden;
+          background: rgba(18,12,36,0.95);
+          border: 0.5px solid rgba(167,139,250,0.2);
+          backdrop-filter: blur(24px);
+          cursor: pointer;
+        }
+        .now-progress-track { height: 2px; background: rgba(255,255,255,0.06); }
+        .now-progress-fill { height: 100%; background: linear-gradient(90deg, #a78bfa, #f9a8d4); transition: width 0.2s linear; }
+        .now-content { display: flex; align-items: center; gap: 12px; padding: 10px 16px; }
+        .now-art {
+          width: 38px; height: 38px; border-radius: 11px; flex-shrink: 0;
+          background: linear-gradient(135deg, rgba(139,92,246,0.7), rgba(59,130,246,0.6));
+          display: flex; align-items: center; justify-content: center; font-size: 16px;
+        }
+        @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
+        .now-art.playing { animation: pulse 2s ease-in-out infinite; }
+        .now-info { flex: 1; min-width: 0; }
+        .now-title { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.92); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .now-artist { font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 2px; }
+        .now-controls { display: flex; align-items: center; gap: 4px; }
+        .now-ctrl {
+          width: 30px; height: 30px; border-radius: 50%; border: none;
+          background: transparent; color: rgba(255,255,255,0.5);
+          font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+          transition: color 0.15s, transform 0.1s;
+        }
+        .now-ctrl:active { transform: scale(0.85); }
+        .now-play-ctrl {
+          width: 34px; height: 34px; border-radius: 50%; border: 0.5px solid rgba(139,92,246,0.4);
+          background: rgba(139,92,246,0.25); color: rgba(255,255,255,0.92);
+          font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+          transition: transform 0.1s;
+        }
+        .now-play-ctrl:active { transform: scale(0.88); }
+
+        /* Track sheet */
+        .sheet-backdrop {
+          position: fixed; inset: 0; z-index: 40;
+          background: rgba(0,0,0,0.65); backdrop-filter: blur(4px);
+          animation: fadeIn 0.2s ease;
+        }
+        @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+        .sheet {
+          position: fixed; bottom: 0; left: 0; right: 0; z-index: 41;
+          border-radius: 28px 28px 0 0; overflow: hidden;
+          background: rgba(12,8,28,0.98); border: 0.5px solid rgba(255,255,255,0.08);
+          backdrop-filter: blur(24px); max-height: 78vh;
+          display: flex; flex-direction: column;
+          animation: sheetUp 0.3s cubic-bezier(0.25,0.46,0.45,0.94);
+        }
+        @keyframes sheetUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+        .sheet-handle { display: flex; justify-content: center; padding: 12px 0 4px; flex-shrink: 0; }
+        .sheet-handle-bar { width: 32px; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.15); }
+        .sheet-header { padding: 8px 20px 16px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+        .sheet-art { width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; }
+        .sheet-title { font-size: 15px; font-weight: 600; color: rgba(255,255,255,0.95); }
+        .sheet-desc { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 3px; line-height: 1.4; }
+        .sheet-play-btn {
+          width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+          background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+          border: none; color: white; font-size: 14px; cursor: pointer;
+          display: flex; align-items: center; justify-content: center;
+          box-shadow: 0 4px 16px rgba(139,92,246,0.4);
+          transition: transform 0.1s;
+        }
+        .sheet-play-btn:active { transform: scale(0.92); }
+        .sheet-tracks { overflow-y: auto; padding: 0 20px 32px; flex: 1; }
+        .track-row {
+          display: flex; align-items: center; gap: 12px;
+          padding: 10px 8px; border-radius: 12px; cursor: pointer;
+          transition: background 0.15s; width: 100%; border: none;
+          background: transparent; font-family: inherit; text-align: left;
+          -webkit-tap-highlight-color: transparent;
+        }
+        .track-row:active { background: rgba(255,255,255,0.05); }
+        .track-row.current { background: rgba(139,92,246,0.12); }
+        .track-num {
+          width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+          display: flex; align-items: center; justify-content: center;
+          font-size: 11px; font-weight: 600;
+          background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.25);
+        }
+        .track-num.current { background: rgba(139,92,246,0.3); color: rgba(196,181,253,0.9); }
+        .track-info { flex: 1; min-width: 0; }
+        .track-title { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.8); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .track-title.current { color: rgba(196,181,253,0.95); }
+        .track-artist { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .track-dur { font-size: 11px; color: rgba(255,255,255,0.25); flex-shrink: 0; }
+      `}</style>
+
+      <div className="music-page">
         <div className="safe-top" />
 
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="px-5 pt-6 pb-4"
-        >
-          <p className="text-[10px] uppercase tracking-[0.12em] text-white/30 mb-1">Lumina Radio</p>
-          <h1 className="text-[26px] font-semibold leading-tight text-dreamy">Your Soundtrack</h1>
-          <p className="text-sm font-light text-white/30 mt-1.5">Music that meets you where you are.</p>
-        </motion.div>
+        <div className="header">
+          <p className="header-label">Lumina Radio</p>
+          <h1 className="header-title">Your Soundtrack</h1>
+          <p className="header-sub">Music that meets you where you are.</p>
+        </div>
 
-        {/* AI mood input */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.15 }}>
-          <AIMoodInput onMoodDetected={handleMoodDetected} />
-        </motion.div>
-
-        {/* Tab switcher */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="px-5 mb-4">
-          <div className="flex rounded-[14px] p-1 gap-1"
-            style={{ background: 'rgba(255,255,255,0.04)', border: '0.5px solid rgba(255,255,255,0.07)' }}>
-            {[{ id: 'playlists', label: '🎵 Playlists' }, { id: 'ambient', label: '🔮 Ambiance' }].map(tab => (
-              <motion.button key={tab.id} whileTap={{ scale: 0.97 }}
-                onClick={() => setActiveTab(tab.id as any)}
-                className="flex-1 py-2 rounded-[11px] text-[12px] font-medium transition-all duration-200"
-                style={{
-                  background: activeTab === tab.id ? 'rgba(139,92,246,0.2)' : 'transparent',
-                  color: activeTab === tab.id ? 'rgba(196,181,253,0.95)' : 'rgba(255,255,255,0.35)',
-                  border: activeTab === tab.id ? '0.5px solid rgba(139,92,246,0.35)' : '0.5px solid transparent',
-                }}>
-                {tab.label}
-              </motion.button>
+        {/* Mood Filters */}
+        <div className="filters-wrap">
+          <div className="filters-row">
+            {MOOD_FILTERS.map(f => (
+              <button
+                key={f.id}
+                className={`filter-btn${moodFilter === f.id ? ' active' : ''}`}
+                onClick={() => setMoodFilter(f.id)}
+              >
+                <span>{f.emoji}</span>
+                <span>{f.label}</span>
+              </button>
             ))}
           </div>
-        </motion.div>
+        </div>
 
-        <AnimatePresence mode="wait">
-          {activeTab === 'playlists' ? (
-            <motion.div key="playlists" initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -16 }} transition={{ duration: 0.2 }}>
-              {/* Mood filters */}
-              <div className="px-5 mb-5">
-                <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
-                  {MOOD_FILTER_OPTIONS.map(opt => {
-                    const active = moodFilter === opt.id
-                    return (
-                      <motion.button key={opt.id} whileTap={{ scale: 0.95 }}
-                        onClick={() => setMoodFilter(opt.id)}
-                        className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full whitespace-nowrap flex-shrink-0 transition-all duration-200"
-                        style={{
-                          background: active ? 'rgba(139,92,246,0.2)' : 'rgba(255,255,255,0.05)',
-                          border: `0.5px solid ${active ? 'rgba(139,92,246,0.45)' : 'rgba(255,255,255,0.08)'}`,
-                          color: active ? opt.color : 'rgba(255,255,255,0.35)',
-                        }}>
-                        <span className="text-xs">{opt.emoji}</span>
-                        <span className="text-[11px] font-medium">{opt.label}</span>
-                      </motion.button>
-                    )
-                  })}
-                </div>
-              </div>
-
-              {/* Playlist grid */}
-              <div className="px-4">
-                <div className="grid grid-cols-2 gap-3">
-                  <AnimatePresence mode="popLayout">
-                    {filteredPlaylists.map((pl, i) => (
-                      <motion.div key={pl.id} layout
-                        initial={{ opacity: 0, scale: 0.92 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.88 }}
-                        transition={{ delay: i * 0.05, duration: 0.3 }}>
-                        <PlaylistCard
-                          playlist={pl}
-                          isActive={activePlaylistId === pl.id && player.isPlaying}
-                          onPlay={handlePlay}
-                          onOpen={setExpandedPlaylist}
-                        />
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
-                </div>
-                {filteredPlaylists.length === 0 && (
-                  <div className="text-center py-16">
-                    <p className="text-3xl mb-3">🎵</p>
-                    <p className="text-sm text-white/35">No playlists for this mood yet.</p>
-                  </div>
-                )}
-              </div>
-            </motion.div>
+        {/* Playlist Grid */}
+        <div className="grid-wrap">
+          {filteredPlaylists.length === 0 ? (
+            <div className="empty">
+              <p>🎵</p>
+              <p>No playlists for this mood yet.</p>
+            </div>
           ) : (
-            <motion.div key="ambient" initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 16 }} transition={{ duration: 0.2 }}>
-              <AmbientSection />
-            </motion.div>
+            <div className="grid">
+              {filteredPlaylists.map(pl => {
+                const active = isActivePlaylist(pl)
+                return (
+                  <div
+                    key={pl.id}
+                    className={`pl-card${active ? ' active-pl' : ''}`}
+                    style={{ background: pl.gradient }}
+                  >
+                    <span className="pl-emoji">{pl.emoji}</span>
+                    <p className="pl-title">{pl.title}</p>
+                    <p className="pl-count">{pl.tracks.length} tracks</p>
+                    <p className="pl-desc">{pl.description}</p>
+                    <div className="pl-footer">
+                      <button
+                        className="pl-open-btn"
+                        onClick={() => setShowSheet(pl)}
+                      >
+                        View
+                      </button>
+                      <button
+                        className={`pl-play-btn${active ? ' playing' : ''}`}
+                        onClick={() => handlePlayPlaylist(pl)}
+                        aria-label={active ? 'Pause' : 'Play'}
+                      >
+                        {active ? '⏸' : '▶'}
+                      </button>
+                    </div>
+                    {active && (
+                      <div className="mini-bars" style={{ marginTop: 8 }}>
+                        {[0,1,2,3].map(i => (
+                          <div key={i} className="mini-bar playing" style={{ animationDelay: `${i * 0.15}s` }} />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
           )}
-        </AnimatePresence>
+        </div>
       </div>
 
-      {/* Expanded playlist sheet */}
-      <AnimatePresence>
-        {expandedPlaylist && (
-          <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[22]"
-              style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}
-              onClick={() => setExpandedPlaylist(null)} />
-            <motion.div
-              initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
-              transition={{ type: 'spring', stiffness: 360, damping: 40 }}
-              className="fixed bottom-0 left-0 right-0 z-[23] rounded-t-[28px] overflow-hidden"
-              style={{ background: 'rgba(12,8,28,0.97)', border: '0.5px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(24px)', maxHeight: '75vh' }}>
-              <div className="flex justify-center pt-3 pb-1">
-                <div className="w-8 h-1 rounded-full" style={{ background: 'rgba(255,255,255,0.15)' }} />
+      {/* Now Playing Bar */}
+      {currentTrack && (
+        <div className="now-bar">
+          <div className="now-bar-inner" onClick={() => activePlaylist && setShowSheet(activePlaylist)}>
+            <div className="now-progress-track">
+              <div className="now-progress-fill" style={{ width: `${progress * 100}%` }} />
+            </div>
+            <div className="now-content">
+              <div className={`now-art${isPlaying ? ' playing' : ''}`}>🎵</div>
+              <div className="now-info">
+                <p className="now-title">{currentTrack.title}</p>
+                <p className="now-artist">{currentTrack.artist}</p>
               </div>
-              <div className="px-5 pt-2 pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-14 h-14 rounded-[16px] flex items-center justify-center text-3xl flex-shrink-0"
-                    style={{ background: expandedPlaylist.gradient }}>
-                    {expandedPlaylist.emoji}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-base font-semibold text-white/95">{expandedPlaylist.title}</h3>
-                    <p className="text-[11px] text-white/35 mt-0.5 leading-relaxed line-clamp-2">{expandedPlaylist.description}</p>
-                  </div>
-                  <motion.button whileTap={{ scale: 0.9 }} onClick={() => handlePlay(expandedPlaylist)}
-                    className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
-                    style={{ background: 'linear-gradient(135deg, #8b5cf6, #6d28d9)', boxShadow: '0 4px 16px rgba(139,92,246,0.4)' }}>
-                    <span className="text-sm text-white">
-                      {activePlaylistId === expandedPlaylist.id && player.isPlaying ? '⏸' : '▶'}
-                    </span>
-                  </motion.button>
-                </div>
+              <div className="now-controls" onClick={e => e.stopPropagation()}>
+                <button className="now-ctrl" onClick={handlePrev} aria-label="Previous">⏮</button>
+                <button className="now-play-ctrl" onClick={handleToggle} aria-label={isPlaying ? 'Pause' : 'Play'}>
+                  {isPlaying ? '⏸' : '▶'}
+                </button>
+                <button className="now-ctrl" onClick={handleNext} aria-label="Next">⏭</button>
               </div>
-              <div className="overflow-y-auto px-5 pb-8" style={{ maxHeight: '45vh' }}>
-                {expandedPlaylist.tracks.map((track, i) => {
-                  const isCurrent = player.currentTrack?.id === track.id
-                  return (
-                    <motion.button key={track.id} whileTap={{ scale: 0.98 }}
-                      onClick={() => { playPlaylist(expandedPlaylist, i); setTimeout(() => setExpandedPlaylist(null), 300) }}
-                      className="w-full flex items-center gap-3 py-3 rounded-[12px] px-2 -mx-2"
-                      style={{ background: isCurrent ? 'rgba(139,92,246,0.12)' : 'transparent' }}>
-                      <div className="w-8 h-8 rounded-[10px] flex items-center justify-center text-xs flex-shrink-0"
-                        style={{ background: isCurrent ? 'rgba(139,92,246,0.3)' : 'rgba(255,255,255,0.05)', color: isCurrent ? 'rgba(196,181,253,0.9)' : 'rgba(255,255,255,0.25)', fontWeight: 600 }}>
-                        {isCurrent && player.isPlaying ? '♫' : i + 1}
-                      </div>
-                      <div className="flex-1 min-w-0 text-left">
-                        <p className="text-[13px] font-medium truncate"
-                          style={{ color: isCurrent ? 'rgba(196,181,253,0.95)' : 'rgba(255,255,255,0.8)' }}>
-                          {track.title}
-                        </p>
-                        <p className="text-[10px] text-white/30 truncate">{track.artist}</p>
-                      </div>
-                      <span className="text-[11px] text-white/25 flex-shrink-0">
-                        {Math.floor(track.duration / 60)}:{(track.duration % 60).toString().padStart(2, '0')}
-                      </span>
-                    </motion.button>
-                  )
-                })}
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+            </div>
+          </div>
+        </div>
+      )}
 
-      <NowPlayingBar onExpand={() => setShowPlayer(true)} />
-      <BottomNav />
-    </main>
+      {/* Track Sheet */}
+      {showSheet && (
+        <>
+          <div className="sheet-backdrop" onClick={() => setShowSheet(null)} />
+          <div className="sheet">
+            <div className="sheet-handle"><div className="sheet-handle-bar" /></div>
+            <div className="sheet-header">
+              <div className="sheet-art" style={{ background: showSheet.gradient }}>{showSheet.emoji}</div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p className="sheet-title">{showSheet.title}</p>
+                <p className="sheet-desc">{showSheet.description}</p>
+              </div>
+              <button
+                className="sheet-play-btn"
+                onClick={() => handlePlayPlaylist(showSheet)}
+                aria-label="Play playlist"
+              >
+                {activePlaylist?.id === showSheet.id && isPlaying ? '⏸' : '▶'}
+              </button>
+            </div>
+            <div className="sheet-tracks">
+              {showSheet.tracks.map((track, i) => {
+                const isCurrent = currentTrack?.id === track.id
+                return (
+                  <button
+                    key={track.id}
+                    className={`track-row${isCurrent ? ' current' : ''}`}
+                    onClick={() => {
+                      handlePlayPlaylist(showSheet, i)
+                      setTimeout(() => setShowSheet(null), 300)
+                    }}
+                  >
+                    <div className={`track-num${isCurrent ? ' current' : ''}`}>
+                      {isCurrent && isPlaying ? '♫' : i + 1}
+                    </div>
+                    <div className="track-info">
+                      <p className={`track-title${isCurrent ? ' current' : ''}`}>{track.title}</p>
+                      <p className="track-artist">{track.artist}</p>
+                    </div>
+                    <span className="track-dur">{fmt(track.duration)}</span>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Bottom Nav */}
+      <nav className="bottom-nav">
+        {[
+          { icon: '🏠', label: 'Home',    href: '/' },
+          { icon: '🎵', label: 'Music',   href: '/music' },
+          { icon: '✦',  label: 'Lumina',  href: '/companion' },
+          { icon: '📖', label: 'Journal', href: '/journal' },
+          { icon: '🤍', label: 'You',     href: '/profile' },
+        ].map(tab => (
+          <button
+            key={tab.href}
+            className={`nav-btn${tab.href === '/music' ? ' active' : ''}`}
+            onClick={() => router.push(tab.href)}
+            aria-label={tab.label}
+          >
+            <span className="nav-icon">{tab.icon}</span>
+            <span className="nav-label" style={{ color: tab.href === '/music' ? 'rgba(196,181,253,0.8)' : 'rgba(255,255,255,0.3)' }}>
+              {tab.label}
+            </span>
+          </button>
+        ))}
+      </nav>
+    </>
   )
 }
