@@ -14,12 +14,22 @@ declare global {
 const PDFJS_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'
 const PDFJS_WORKER = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
 
+// Fetches via Next.js rewrite proxy — avoids Gutenberg IP blocks
 async function fetchGutenbergText(id: number): Promise<string> {
-  const res = await fetch(`/api/library/gutenberg?id=${id}`)
-  if (!res.ok) throw new Error('Failed')
-  const text = await res.text()
-  if (text.length < 500) throw new Error('Too short')
-  return text
+  const urls = [
+    `/gutenberg-proxy/cache/epub/${id}/pg${id}.txt`,
+    `/gutenberg-proxy/files/${id}/${id}-0.txt`,
+    `/gutenberg-proxy/files/${id}/${id}.txt`,
+  ]
+  for (const url of urls) {
+    try {
+      const res = await fetch(url)
+      if (!res.ok) continue
+      const text = await res.text()
+      if (text.length > 500 && !text.trim().startsWith('<!')) return text
+    } catch {}
+  }
+  throw new Error('Failed to load')
 }
 
 // ============================================================
