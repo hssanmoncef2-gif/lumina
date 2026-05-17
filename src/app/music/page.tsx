@@ -647,7 +647,7 @@ export default function MusicPage() {
           <button
             key={tab.href}
             className={`nav-btn${tab.href === '/music' ? ' active' : ''}`}
-            onClick={() => router.push(tab.href)}
+            onClick={() => router.push(tab.href as any)}
             aria-label={tab.label}
           >
             <span className="nav-icon">{tab.icon}</span>
