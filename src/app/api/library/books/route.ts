@@ -1,15 +1,16 @@
 import { NextResponse } from 'next/server'
 
-const SUPABASE_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-const SUPABASE_KEY =
-  process.env.SUPABASE_SERVICE_KEY ||
-  process.env.SUPABASE_SERVICE_ROLE_KEY ||
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-  ''
 const BUCKET = 'books'
 
 export async function GET() {
+  const SUPABASE_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+  const SUPABASE_KEY =
+    process.env.SUPABASE_SERVICE_KEY ||
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    ''
+
   if (!SUPABASE_URL || !SUPABASE_KEY) {
     return NextResponse.json(
       { error: 'Supabase not configured. Add SUPABASE_URL and SUPABASE_SERVICE_KEY to your .env.local' },
@@ -31,13 +32,13 @@ export async function GET() {
     if (!res.ok) {
       const err = await res.text()
       console.error('Supabase list error:', res.status, err)
-      return NextResponse.json({ error: `Supabase error: ${res.status}` }, { status: res.status })
+      return NextResponse.json({ error: `Supabase error: ${res.status}`, detail: err }, { status: res.status })
     }
 
     const files = await res.json()
 
     if (!Array.isArray(files)) {
-      return NextResponse.json({ books: [] })
+      return NextResponse.json({ books: [], debug: files })
     }
 
     const books = files
