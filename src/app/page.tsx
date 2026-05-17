@@ -47,7 +47,7 @@ export default function HomePage() {
   }, [onboardingComplete, router, session])
 
   return (
-    <main className="relative min-h-dvh overflow-hidden bg-lumina-void">
+    <main className="relative min-h-dvh overflow-hidden bg-lumina-void" data-mood={currentMood ?? 'default'}>
       <AtmosphericBackground mood={currentMood} />
       <FloatingParticles mood={currentMood} count={20} />
       <div className="relative z-content flex flex-col min-h-dvh">

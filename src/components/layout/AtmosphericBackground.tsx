@@ -1,71 +1,36 @@
 'use client'
 
-import { useState, useEffect, memo } from 'react'
+import { useEffect, useRef, memo } from 'react'
 import type { MoodId } from '@/types'
-
-const MOOD_COLORS: Record<string, string[]> = {
-  calm:     ['rgba(180,130,255,0.7)', 'rgba(120,180,255,0.6)', 'rgba(255,160,200,0.5)'],
-  drifting: ['rgba(100,180,255,0.7)', 'rgba(180,220,255,0.6)', 'rgba(140,200,255,0.5)'],
-  soft:     ['rgba(255,160,210,0.7)', 'rgba(220,150,255,0.6)', 'rgba(255,200,230,0.5)'],
-  alive:    ['rgba(80,220,160,0.7)',  'rgba(100,255,180,0.6)', 'rgba(150,255,200,0.5)'],
-  heavy:    ['rgba(140,100,255,0.6)', 'rgba(100,80,220,0.5)',  'rgba(160,140,255,0.4)'],
-  default:  ['rgba(180,130,255,0.6)', 'rgba(120,180,255,0.5)', 'rgba(255,255,255,0.3)'],
-}
 
 interface Props {
   mood: MoodId | null
-  count?: number
 }
 
-const FloatingParticles = memo(function FloatingParticles({ mood, count = 18 }: Props) {
-  const [particles, setParticles] = useState<Array<{
-    id: number
-    left: string
-    startY: string
-    color: string
-    size: number
-    duration: string
-    delay: string
-    dx: string
-  }>>([])
+const AtmosphericBackground = memo(function AtmosphericBackground({ mood }: Props) {
+  const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const colors = MOOD_COLORS[mood ?? 'default'] ?? MOOD_COLORS.default
-    setParticles(
-      Array.from({ length: count }, (_, i) => ({
-        id: i,
-        left: `${Math.random() * 100}%`,
-        startY: `${60 + Math.random() * 40}%`,
-        color: colors[i % colors.length],
-        size: 1.5 + Math.random() * 2,
-        duration: `${4 + Math.random() * 7}s`,
-        delay: `${Math.random() * 6}s`,
-        dx: `${(Math.random() - 0.5) * 50}px`,
-      }))
-    )
-  }, [mood, count])
-
-  if (particles.length === 0) return null
+    const el = ref.current
+    if (!el) return
+    el.setAttribute('data-mood', mood ?? 'default')
+  }, [mood])
 
   return (
-    <div className="fixed inset-0 z-[2] pointer-events-none overflow-hidden">
-      {particles.map((p) => (
-        <div
-          key={p.id}
-          className="absolute rounded-full"
-          style={{
-            left: p.left,
-            top: p.startY,
-            width: p.size,
-            height: p.size,
-            background: p.color,
-            ['--dx' as string]: p.dx,
-            animation: `driftUp ${p.duration} linear ${p.delay} infinite`,
-          }}
-        />
-      ))}
+    <div ref={ref} className="atmo-root" data-mood={mood ?? 'default'}>
+      <div className="atmo-base" />
+      <div className="atmo-orb atmo-orb-a" />
+      <div className="atmo-orb atmo-orb-b" />
+      <div className="atmo-orb atmo-orb-c" />
+      <div className="atmo-fx" />
+      <div className="atmo-particles">
+        {Array.from({ length: 24 }, (_, i) => (
+          <div key={i} className="atmo-particle" style={{ '--i': i } as React.CSSProperties} />
+        ))}
+      </div>
+      <div className="atmo-vignette" />
     </div>
   )
 })
 
-export default FloatingParticles
+export default AtmosphericBackground
