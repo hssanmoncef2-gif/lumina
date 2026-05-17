@@ -123,6 +123,59 @@ const GUTENBERG_PICKS: Book[] = [
 // ============================================================
 // Component
 // ============================================================
+// ── Proxy-backed cover image ─────────────────────────────────
+function coverSrc(book: Book): string {
+  if (book.source === 'gutenberg' && book.gutenbergId) {
+    return `/api/library/cover?gutenbergId=${book.gutenbergId}&title=${encodeURIComponent(book.title)}&author=${encodeURIComponent(book.author)}`
+  }
+  if (book.coverUrl) return book.coverUrl
+  return ''
+}
+
+const COVER_GRADIENTS = [
+  'linear-gradient(135deg,#4f46e5 0%,#1e1b4b 100%)',
+  'linear-gradient(135deg,#7c3aed 0%,#1e1b4b 100%)',
+  'linear-gradient(135deg,#0e7490 0%,#0f172a 100%)',
+  'linear-gradient(135deg,#065f46 0%,#0f172a 100%)',
+  'linear-gradient(135deg,#9f1239 0%,#1e1b4b 100%)',
+  'linear-gradient(135deg,#92400e 0%,#0f172a 100%)',
+]
+
+function hashGradient(id: string): string {
+  let h = 0
+  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) & 0xffffffff
+  return COVER_GRADIENTS[Math.abs(h) % COVER_GRADIENTS.length]
+}
+
+interface BookCoverProps { book: Book; className?: string }
+function BookCover({ book, className }: BookCoverProps) {
+  const src = coverSrc(book)
+  const [failed, setFailed] = useState(false)
+
+  if (src && !failed) {
+    return (
+      <img
+        src={src}
+        alt={book.title}
+        className={className}
+        onError={() => setFailed(true)}
+      />
+    )
+  }
+
+  // Fallback: beautiful gradient card with title
+  return (
+    <div
+      className={\`\${className} flex flex-col items-center justify-center gap-2 p-2\`}
+      style={{ background: hashGradient(book.id) }}
+    >
+      <span className="text-2xl">{book.source === 'supabase' ? '📄' : '📖'}</span>
+      <p className="text-white/80 text-[8px] font-medium text-center leading-tight line-clamp-4 px-1">{book.title}</p>
+      <p className="text-white/40 text-[7px] text-center truncate w-full px-1">{book.author}</p>
+    </div>
+  )
+}
+
 export default function LibraryPage() {
   const router = useRouter()
   const { data: session } = useSession()
@@ -135,6 +188,7 @@ export default function LibraryPage() {
   const [myBooks, setMyBooks] = useState<Book[]>([])
   const [progress, setProgress] = useState<Record<string, ReadingProgress>>({})
   const [isLoadingMine, setIsLoadingMine] = useState(false)
+  const [myBooksError, setMyBooksError] = useState('')
 
   // ── Fetch user's Supabase PDFs ──────────────────────────────
   useEffect(() => {
@@ -144,19 +198,20 @@ export default function LibraryPage() {
 
   async function fetchMyBooks() {
     setIsLoadingMine(true)
+    setMyBooksError('')
     try {
       const res = await fetch('/api/library/books')
-      if (!res.ok) {
-        console.warn('Could not load personal books:', res.status)
+      const data = await res.json()
+      if (!res.ok || data.error) {
+        setMyBooksError(data.error ?? `Error ${res.status}`)
         setIsLoadingMine(false)
         return
       }
-      const data = await res.json()
       if (Array.isArray(data.books)) {
         setMyBooks(data.books as Book[])
       }
-    } catch (err) {
-      console.warn('fetchMyBooks error:', err)
+    } catch (err: any) {
+      setMyBooksError(err?.message ?? 'Unknown error')
     }
     setIsLoadingMine(false)
   }
@@ -323,10 +378,7 @@ export default function LibraryPage() {
                       border: '1px solid rgba(255,255,255,0.08)',
                     }}
                   >
-                    {book.coverUrl
-                      ? <img src={book.coverUrl} alt={book.title} className="w-full h-36 object-cover" />
-                      : <div className="w-full h-36 flex items-center justify-center text-3xl" style={{ background: 'rgba(139,92,246,0.15)' }}>📄</div>
-                    }
+                    <BookCover book={book} className="w-full h-36 object-cover" />
                     <div className="p-2">
                       <p className="text-white/80 text-[10px] font-medium leading-tight truncate">{book.title}</p>
                       <div className="mt-1.5 h-0.5 w-full rounded-full bg-white/10">
@@ -344,6 +396,12 @@ export default function LibraryPage() {
           </div>
         )}
 
+        {/* ── Supabase error banner (shows in 'all' view too) ── */}
+        {myBooksError && activeFilter !== 'mine' && !searchQuery && (
+          <div className="mx-5 mt-3 px-4 py-2 rounded-xl text-[11px] text-red-300/70" style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.15)' }}>
+            ⚠️ Your personal books couldn't load: {myBooksError}
+          </div>
+        )}
         {/* ── Book grid ── */}
         <div className="px-5 mt-5">
           {searchQuery && (
@@ -353,9 +411,19 @@ export default function LibraryPage() {
           )}
           {!searchQuery && !isLoadingMine && activeFilter === 'mine' && myBooks.length === 0 && (
             <div className="text-center py-16">
-              <p className="text-4xl mb-3">📂</p>
-              <p className="text-white/40 text-sm">No PDFs uploaded yet.</p>
-              <p className="text-white/25 text-xs mt-1">Upload PDFs to your Supabase <code className="opacity-60">books</code> bucket.</p>
+              <p className="text-4xl mb-3">{myBooksError ? '⚠️' : '📂'}</p>
+              {myBooksError ? (
+                <>
+                  <p className="text-white/50 text-sm">Couldn't load your books</p>
+                  <p className="text-red-400/70 text-[11px] mt-2 px-4 leading-relaxed">{myBooksError}</p>
+                  <p className="text-white/25 text-[10px] mt-2">Check that SUPABASE_URL and SUPABASE_SERVICE_KEY are set in your environment.</p>
+                </>
+              ) : (
+                <>
+                  <p className="text-white/40 text-sm">No PDFs uploaded yet.</p>
+                  <p className="text-white/25 text-xs mt-1">Drop PDFs into your Supabase <code className="opacity-60">books</code> bucket.</p>
+                </>
+              )}
             </div>
           )}
           <div className="grid grid-cols-4 gap-2">
@@ -371,22 +439,7 @@ export default function LibraryPage() {
               >
                 {/* Cover */}
                 <div className="relative w-full aspect-[2/2.5]">
-                  {book.coverUrl
-                    ? <img src={book.coverUrl} alt={book.title} className="w-full h-full object-cover" />
-                    : (
-                      <div
-                        className="w-full h-full flex flex-col items-center justify-center gap-2"
-                        style={{
-                          background: book.source === 'supabase'
-                            ? 'linear-gradient(135deg,rgba(139,92,246,0.3) 0%,rgba(30,27,75,0.8) 100%)'
-                            : 'linear-gradient(135deg,rgba(56,189,248,0.2) 0%,rgba(15,23,42,0.9) 100%)',
-                        }}
-                      >
-                        <span className="text-3xl">{book.source === 'supabase' ? '📄' : '📖'}</span>
-                        <p className="text-white/50 text-[9px] px-2 text-center leading-tight line-clamp-3">{book.title}</p>
-                      </div>
-                    )
-                  }
+                  <BookCover book={book} className="w-full h-full object-cover" />
                   {/* Source badge */}
                   <div
                     className="absolute top-2 right-2 px-1.5 py-0.5 rounded-full text-[8px]"
