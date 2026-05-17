@@ -6,6 +6,7 @@ export async function GET(req: NextRequest) {
 
   const urls = [
     `https://www.gutenberg.org/files/${id}/${id}-0.txt`,
+    `https://www.gutenberg.org/files/${id}/${id}-8.txt`,
     `https://www.gutenberg.org/files/${id}/${id}.txt`,
     `https://www.gutenberg.org/cache/epub/${id}/pg${id}.txt`,
   ]
@@ -14,10 +15,12 @@ export async function GET(req: NextRequest) {
     try {
       const res = await fetch(url, {
         headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Lumina/1.0)' },
+        signal: AbortSignal.timeout(8000),
       })
       if (!res.ok) continue
       const text = await res.text()
-      if (text.length > 500) {
+      // Make sure it's actual book text not an HTML error page
+      if (text.length > 500 && !text.trim().startsWith('<!')) {
         return new NextResponse(text, {
           headers: { 'Content-Type': 'text/plain; charset=utf-8' },
         })
