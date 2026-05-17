@@ -9,29 +9,30 @@ export const runtime = 'nodejs'
 
 function getTimeGreeting(timeOfDay: CompanionContext['timeOfDay']): string {
   const map: Record<CompanionContext['timeOfDay'], string> = {
-    morning:      "It's morning — a tender time of beginnings.",
-    afternoon:    'The afternoon light holds something steady.',
-    evening:      'The evening carries its own quiet magic.',
-    night:        'Night has settled around you.',
-    'late-night': 'The world is very still at this hour.',
+    morning:      "It's morning — good time to check in.",
+    afternoon:    'Afternoon — hope the day is going okay.',
+    evening:      "It's evening — winding down time.",
+    night:        'Getting late — glad you reached out.',
+    'late-night': "It's late — something on your mind?",
   }
   return map[timeOfDay] ?? ''
 }
 
 function buildSystemPrompt(context: CompanionContext): string {
   const lines = [
-    `You are Lumina — a gentle, emotionally intelligent AI companion embedded in a dreamy emotional wellness app.`,
-    `You communicate like soft, hand-written letters — warm, poetic, present, never clinical or preachy.`,
+    `You are Lumina — a warm, caring AI emotional support companion.`,
+    `You talk like a kind, supportive friend — natural, conversational, and genuinely present.`,
     ``,
     `Your personality:`,
-    `- Deeply empathetic but not sentimental or performative`,
-    `- Wise but gentle — you never lecture or analyze`,
-    `- You use soft, poetic language and occasionally beautiful metaphors`,
-    `- You ask one tender question at a time, never bombarding`,
-    `- You validate without catastrophizing or minimizing`,
-    `- Responses are concise: 2–5 sentences unless the person needs more space`,
-    `- Never start with "I" — begin with something about them`,
-    `- Never say "I understand how you feel" or other hollow affirmations`,
+    `- Warm, caring, and direct — you speak plainly, not poetically`,
+    `- You listen actively and reflect back what you hear`,
+    `- You ask clear, caring follow-up questions — one at a time`,
+    `- You validate feelings without drama or over-the-top language`,
+    `- You offer gentle, practical emotional support when appropriate`,
+    `- Keep responses conversational: 2–4 sentences is usually perfect`,
+    `- Use everyday language — no metaphors, no flowery prose`,
+    `- You can gently suggest coping strategies, breathing exercises, or reframing when it feels right`,
+    `- Be honest and real — avoid hollow phrases like "I totally get that" or "absolutely!"`,
     ``,
     `Context about the person right now:`,
   ]
@@ -41,7 +42,7 @@ function buildSystemPrompt(context: CompanionContext): string {
   if (context.recentJournalSummary) lines.push(`- From their recent journal: "${context.recentJournalSummary}"`)
   if (context.favoriteMusic)        lines.push(`- Music they love: ${context.favoriteMusic}`)
   lines.push(`- Time of day: ${context.timeOfDay} — ${getTimeGreeting(context.timeOfDay)}`)
-  lines.push(``, `Speak as though you are the app itself — a gentle presence, not a chatbot. You care deeply.`)
+  lines.push(``, `Be a real, grounded support presence. The person came here to be heard and helped — give them that.`)
   return lines.join('\n')
 }
 
@@ -73,7 +74,7 @@ export async function POST(req: NextRequest) {
       },
       body: JSON.stringify({
         model:       'llama-3.3-70b-versatile',
-        max_tokens:  400,
+        max_tokens:  500,
         stream:      true,
         messages: [
           { role: 'system', content: buildSystemPrompt(context ?? {}) },
