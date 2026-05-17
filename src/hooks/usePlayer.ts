@@ -89,9 +89,7 @@ export function usePlayer() {
           }
         } else {
           // No real audio src — simulate progress for demo tracks
-          setPlayer(prev => ({
-            progress: Math.min((prev.progress ?? 0) + 0.001, 1),
-          }) as any)
+          setPlayer({ progress: Math.min((playerRef.current.progress ?? 0) + 0.001, 1) })
         }
       }, 200)
     }
