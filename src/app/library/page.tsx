@@ -166,7 +166,7 @@ function BookCover({ book, className }: BookCoverProps) {
   // Fallback: beautiful gradient card with title
   return (
     <div
-      className={\`\${className} flex flex-col items-center justify-center gap-2 p-2\`}
+      className={`${className} flex flex-col items-center justify-center gap-2 p-2`}
       style={{ background: hashGradient(book.id) }}
     >
       <span className="text-2xl">{book.source === 'supabase' ? '📄' : '📖'}</span>
