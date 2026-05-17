@@ -189,80 +189,28 @@ export default function LibraryPage() {
   const [progress, setProgress] = useState<Record<string, ReadingProgress>>({})
   const [isLoadingMine, setIsLoadingMine] = useState(false)
   const [myBooksError, setMyBooksError] = useState('')
-  const [showSupabaseSetup, setShowSupabaseSetup] = useState(false)
-  const [sbUrl, setSbUrl] = useState('')
-  const [sbKey, setSbKey] = useState('')
-
-  // ── Load Supabase config from localStorage ──────────────────
-  useEffect(() => {
-    const savedUrl = localStorage.getItem('lumina_sb_url') || ''
-    const savedKey = localStorage.getItem('lumina_sb_key') || ''
-    setSbUrl(savedUrl)
-    setSbKey(savedKey)
-  }, [])
-
-  // ── Fetch user's Supabase PDFs directly (no env vars needed) ──
+  // ── Fetch user's Supabase PDFs via API route ──────────────
   useEffect(() => {
     fetchMyBooks()
     if (userId) fetchProgress()
-  }, [userId, sbUrl, sbKey])
+  }, [userId])
 
   async function fetchMyBooks() {
-    const url = sbUrl || localStorage.getItem('lumina_sb_url') || ''
-    const key = sbKey || localStorage.getItem('lumina_sb_key') || ''
-    if (!url || !key) {
-      setMyBooks([])
-      return
-    }
     setIsLoadingMine(true)
     setMyBooksError('')
     try {
-      const res = await fetch(`${url}/storage/v1/object/list/books`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${key}`,
-          'apikey': key,
-        },
-        body: JSON.stringify({ prefix: '', limit: 200, offset: 0, sortBy: { column: 'name', order: 'asc' } }),
-      })
+      const res = await fetch('/api/library/books')
       if (!res.ok) {
-        const errText = await res.text()
-        setMyBooksError(`Supabase error ${res.status}: ${errText.slice(0, 120)}`)
-        setIsLoadingMine(false)
+        const data = await res.json()
+        setMyBooksError(data.error ?? `Error ${res.status}`)
         return
       }
-      const files = await res.json()
-      if (!Array.isArray(files)) { setIsLoadingMine(false); return }
-      const books: Book[] = files
-        .filter((f: any) => f.name && /\.(pdf|epub)$/i.test(f.name))
-        .map((f: any) => {
-          const rawName = f.name.replace(/\.(pdf|epub)$/i, '')
-          const title = rawName.replace(/[-_]/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()).trim()
-          return {
-            id: `sb-${f.name}`,
-            title,
-            author: 'Your Library',
-            coverUrl: '',
-            source: 'supabase' as const,
-            fileUrl: `${url}/storage/v1/object/public/books/${encodeURIComponent(f.name)}`,
-            genre: 'mine',
-            description: 'From your personal collection.',
-          }
-        })
-      setMyBooks(books)
+      const data = await res.json()
+      setMyBooks(data.books ?? [])
     } catch (err: any) {
       setMyBooksError(err?.message ?? 'Unknown error')
     }
     setIsLoadingMine(false)
-  }
-
-  function saveSupabaseConfig() {
-    localStorage.setItem('lumina_sb_url', sbUrl.trim().replace(/\/$/, ''))
-    localStorage.setItem('lumina_sb_key', sbKey.trim())
-    setShowSupabaseSetup(false)
-    setSbUrl(sbUrl.trim().replace(/\/$/, ''))
-    setSbKey(sbKey.trim())
   }
 
   async function fetchProgress() {
@@ -404,13 +352,7 @@ export default function LibraryPage() {
               >
                 <span>{f.emoji}</span>
                 <span>{f.label}</span>
-                {f.id === 'mine' && activeFilter === 'mine' && (
-                  <span
-                    onClick={e => { e.stopPropagation(); setShowSupabaseSetup(true) }}
-                    className="text-white/40 hover:text-white/70 transition-colors"
-                    title="Configure Supabase"
-                  >⚙️</span>
-                )}
+
               </button>
             ))}
           </div>
@@ -460,78 +402,16 @@ export default function LibraryPage() {
             </p>
           )}
 
-          {/* Supabase setup modal */}
-          {showSupabaseSetup && (
-            <div className="fixed inset-0 z-50 flex items-end justify-center" style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)' }}>
-              <div className="w-full max-w-lg rounded-t-3xl p-6 pb-10" style={{ background: '#120f1f', border: '1px solid rgba(139,92,246,0.2)' }}>
-                <div className="flex items-center justify-between mb-5">
-                  <div>
-                    <p className="text-white/90 font-semibold text-base" style={{ fontFamily: 'var(--font-sora)' }}>Connect Your Library</p>
-                    <p className="text-white/35 text-xs mt-0.5">Paste your Supabase project details</p>
-                  </div>
-                  <button onClick={() => setShowSupabaseSetup(false)} className="text-white/30 hover:text-white/60 text-xl">✕</button>
-                </div>
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-white/50 text-[10px] uppercase tracking-wider mb-1.5">Project URL</p>
-                    <input
-                      type="text"
-                      placeholder="https://xxxxxxxxxxxx.supabase.co"
-                      value={sbUrl}
-                      onChange={e => setSbUrl(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl text-sm text-white/80 placeholder-white/20 outline-none"
-                      style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', fontFamily: 'monospace' }}
-                    />
-                    <p className="text-white/25 text-[10px] mt-1">Supabase Dashboard → Project Settings → API → Project URL</p>
-                  </div>
-                  <div>
-                    <p className="text-white/50 text-[10px] uppercase tracking-wider mb-1.5">Anon / Public Key</p>
-                    <input
-                      type="password"
-                      placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                      value={sbKey}
-                      onChange={e => setSbKey(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl text-sm text-white/80 placeholder-white/20 outline-none"
-                      style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', fontFamily: 'monospace' }}
-                    />
-                    <p className="text-white/25 text-[10px] mt-1">Use the <strong className="text-white/35">anon/public</strong> key — safe to use in browser</p>
-                  </div>
-                  {myBooksError && (
-                    <div className="px-3 py-2 rounded-xl text-[11px] text-red-300/70" style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)' }}>
-                      ⚠️ {myBooksError}
-                    </div>
-                  )}
-                  <button
-                    onClick={saveSupabaseConfig}
-                    disabled={!sbUrl || !sbKey}
-                    className="w-full py-3 rounded-xl text-sm font-medium transition-all disabled:opacity-30"
-                    style={{ background: 'rgba(139,92,246,0.4)', border: '1px solid rgba(139,92,246,0.5)', color: 'rgba(196,181,253,0.95)', fontFamily: 'var(--font-sora)' }}
-                  >
-                    Connect & Load Books
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
           {!searchQuery && !isLoadingMine && activeFilter === 'mine' && myBooks.length === 0 && (
             <div className="flex flex-col items-center text-center py-12 gap-4">
               <p className="text-5xl">📚</p>
               <div>
-                <p className="text-white/60 text-sm font-medium">Your personal books</p>
-                <p className="text-white/30 text-xs mt-1">Connect your Supabase bucket to see PDFs you've uploaded</p>
+                <p className="text-white/60 text-sm font-medium">No books found</p>
+                <p className="text-white/30 text-xs mt-1">Upload PDFs or EPUBs to your Supabase "books" bucket</p>
               </div>
               {myBooksError && (
-                <p className="text-red-400/60 text-[11px] px-6 leading-relaxed">{myBooksError}</p>
+                <p className="text-red-400/60 text-[11px] px-6 leading-relaxed">⚠️ {myBooksError}</p>
               )}
-              <button
-                onClick={() => setShowSupabaseSetup(true)}
-                className="px-5 py-2.5 rounded-full text-sm font-medium transition-all"
-                style={{ background: 'rgba(139,92,246,0.25)', border: '1px solid rgba(139,92,246,0.4)', color: 'rgba(196,181,253,0.9)', fontFamily: 'var(--font-sora)' }}
-              >
-                {sbUrl ? '⚙️ Update Connection' : '🔗 Connect Supabase'}
-              </button>
-              {sbUrl && <p className="text-white/20 text-[10px]">Connected to {sbUrl.replace('https://', '').split('.')[0]}.supabase.co</p>}
             </div>
           )}
           <div className="grid grid-cols-4 gap-2">
