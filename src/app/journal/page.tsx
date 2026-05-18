@@ -1,13 +1,14 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import {
-  ChevronLeft, ChevronRight, Home, Music, Sparkles,
-  BookOpen, FileText, Heart, Plus, X, Bold, Italic,
+  ChevronLeft, ChevronRight, Plus, X, Bold, Italic,
   Underline, Strikethrough, AlignLeft, AlignCenter,
   AlignRight, List, Quote, Check
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import BottomNav from '@/components/ui/BottomNav';
+import AtmosphericBg from '@/components/ui/AtmosphericBg';
 
 const DAYS   = ['S','M','T','W','T','F','S'];
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -23,14 +24,6 @@ const ACCENTS = [
 type Accent = typeof ACCENTS[0];
 type Entry  = { id:string; date:string; title:string; html:string; mood:string; accent:Accent };
 
-// Stable pseudo-random stars (no re-render jitter)
-const STARS = Array.from({length:40},(_,i)=>({
-  id:i,
-  size:(((i*7+3)%17)/17)*2+1,
-  top:(((i*13+5)%97))+'%',
-  left:(((i*11+2)%89))+'%',
-  op:(((i*9+1)%5)/10)+0.1,
-}));
 
 export default function JournalPage() {
   const today    = new Date();
@@ -38,12 +31,20 @@ export default function JournalPage() {
 
   const [viewDate, setViewDate]   = useState(new Date(today.getFullYear(), today.getMonth(), 1));
   const [selected, setSelected]   = useState(todayKey);
-  const [entries,  setEntries]    = useState<Entry[]>([]);
+  const [entries,  setEntries]    = useState<Entry[]>(() => {
+    if (typeof window === 'undefined') return [];
+    try { return JSON.parse(localStorage.getItem('lumina-journal') ?? '[]'); } catch { return []; }
+  });
   const [writing,  setWriting]    = useState(false);
   const [title,    setTitle]      = useState('');
   const [mood,     setMood]       = useState(MOODS[0]);
   const [accent,   setAccent]     = useState(ACCENTS[0]);
   const editorRef = useRef<HTMLDivElement>(null);
+
+  // Persist to localStorage whenever entries change
+  useEffect(() => {
+    try { localStorage.setItem('lumina-journal', JSON.stringify(entries)); } catch {}
+  }, [entries]);
 
   const year       = viewDate.getFullYear();
   const month      = viewDate.getMonth();
@@ -76,14 +77,7 @@ export default function JournalPage() {
     <div className="relative min-h-screen bg-[#09091a] text-white overflow-hidden flex flex-col select-none">
 
       {/* Atmosphere */}
-      <div className="pointer-events-none fixed inset-0 z-0">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_20%_10%,rgba(88,28,220,0.14),transparent)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_80%_90%,rgba(20,180,160,0.09),transparent)]" />
-        {STARS.map(s=>(
-          <div key={s.id} className="absolute rounded-full bg-white"
-            style={{width:s.size,height:s.size,top:s.top,left:s.left,opacity:s.op}} />
-        ))}
-      </div>
+      <AtmosphericBg />
 
       {/* ─── Main scroll area ─── */}
       <div className="relative z-10 flex flex-col flex-1 px-4 pt-10 pb-28 max-w-lg mx-auto w-full">
@@ -334,25 +328,7 @@ export default function JournalPage() {
       </AnimatePresence>
 
       {/* Bottom Nav */}
-      <nav className="fixed bottom-0 inset-x-0 z-40 bg-[#09091a]/90 backdrop-blur-md border-t border-white/[0.06]">
-        <div className="flex items-center justify-around px-4 py-3 max-w-lg mx-auto">
-          {[
-            {icon:Home,    label:'HOME'},
-            {icon:Music,   label:'MUSIC'},
-            {icon:Sparkles,label:'LUMINA'},
-            {icon:BookOpen,label:'LIBRARY'},
-            {icon:FileText,label:'JOURNAL',active:true},
-            {icon:Heart,   label:'YOU'},
-          ].map(({icon:Icon,label,active})=>(
-            <button key={label}
-              className={`flex flex-col items-center gap-1 transition-colors ${active?'text-amber-300/80':'text-white/25 hover:text-white/45'}`}>
-              <Icon size={18}/>
-              <span className="text-[8px] tracking-wider">{label}</span>
-              {active&&<span className="w-3 h-0.5 rounded-full bg-amber-300/60"/>}
-            </button>
-          ))}
-        </div>
-      </nav>
+      <BottomNav />
     </div>
   );
 }
