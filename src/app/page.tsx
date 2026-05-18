@@ -62,9 +62,9 @@ export default function HomePage() {
             >
               <HomeHeader greeting={greeting} />
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.7 }} className="px-5 mt-5">
-                <p className="text-[10px] uppercase tracking-[0.12em] text-lumina-purple-dream/60 mb-1.5">Your sanctuary</p>
-                <h1 className="text-[26px] font-semibold leading-tight text-dreamy">A space made<br />just for you.</h1>
-                <p className="text-sm font-light text-white/35 mt-2 leading-relaxed">Soft, safe, and always here when you need it.</p>
+                <p className="text-[10px] uppercase tracking-[0.2em] mb-2" style={{ color: 'rgba(196,181,253,0.45)' }}>Your sanctuary</p>
+                <h1 className="text-dreamy leading-[1.12]" style={{ fontSize: 'clamp(30px, 8vw, 38px)', fontWeight: 600, letterSpacing: '-0.025em' }}>A space made<br />just for you.</h1>
+                <p className="mt-2.5 leading-relaxed" style={{ fontSize: '13px', fontWeight: 300, color: 'rgba(255,255,255,0.32)' }}>Soft, safe, and always here when you need it.</p>
               </motion.div>
               <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35, duration: 0.6 }} className="mt-5">
                 <MoodSelector currentMood={currentMood} onMoodSelect={setCurrentMood} />
