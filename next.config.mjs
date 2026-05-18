@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  typedRoutes: true,
+  experimental: {
+    typedRoutes: true,
+  },
   images: {
     domains: ['your-supabase-project.supabase.co'],
     formats: ['image/avif', 'image/webp'],

@@ -13,7 +13,6 @@ import FloatingParticles from '@/components/ui/FloatingParticles'
 import BottomNav from '@/components/layout/BottomNav'
 import JournalEntryCard from '@/components/journal/JournalEntryCard'
 import { useJournalEntries } from '@/hooks/useJournal'
-import JournalCalendar from '@/components/journal/JournalCalendar'
 import { useLuminaStore } from '@/store/useAppStore'
 
 const DEV_USER_ID = 'dev-user'
@@ -25,7 +24,6 @@ export default function JournalPage() {
   const userId      = (session?.user as any)?.id ?? useLuminaStore.getState().user?.id ?? DEV_USER_ID
   const [isReady, setIsReady] = useState(false)
   const [filter, setFilter]   = useState<'all' | 'favorites'>('all')
-  const [showCalendar, setShowCalendar] = useState(false)
 
   const { entries, isLoading, remove, toggleFav } = useJournalEntries(userId)
 
@@ -37,8 +35,6 @@ export default function JournalPage() {
   const displayed = filter === 'favorites'
     ? entries.filter(e => e.isFavorite)
     : entries
-
-  const entryDates = entries.map(e => e.createdAt.toISOString().slice(0, 10))
 
   const totalWords = entries.reduce((acc, e) => {
     return acc + e.content.split(/\s+/).filter(Boolean).length
@@ -133,46 +129,6 @@ export default function JournalPage() {
                   </div>
                 </motion.div>
               )}
-
-
-              {/* Calendar toggle + calendar */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.22, duration: 0.5 }}
-                className="px-5 mb-3"
-              >
-                <button
-                  onClick={() => setShowCalendar(v => !v)}
-                  className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.09em] px-3.5 py-1.5 rounded-full transition-all"
-                  style={{
-                    fontFamily: 'var(--font-sora)',
-                    background: showCalendar ? 'rgba(252,178,110,0.12)' : 'rgba(255,255,255,0.04)',
-                    border: `0.5px solid ${showCalendar ? 'rgba(252,178,110,0.3)' : 'rgba(255,255,255,0.08)'}`,
-                    color: showCalendar ? 'rgba(252,210,160,0.85)' : 'rgba(255,255,255,0.3)',
-                  }}
-                >
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                    <line x1="16" y1="2" x2="16" y2="6" />
-                    <line x1="8" y1="2" x2="8" y2="6" />
-                    <line x1="3" y1="10" x2="21" y2="10" />
-                  </svg>
-                  <span>{showCalendar ? 'Hide calendar' : 'Calendar'}</span>
-                </button>
-
-                {showCalendar && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="mt-3"
-                  >
-                    <JournalCalendar entryDates={entryDates} />
-                  </motion.div>
-                )}
-              </motion.div>
 
               {/* Filter tabs */}
               {entries.length > 0 && (

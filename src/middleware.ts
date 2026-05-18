@@ -1,16 +1,19 @@
 // ============================================================
-// LUMINA — Middleware: ALL routes require auth except auth pages
+// LUMINA — Middleware (NextAuth)
+// Replaces Supabase session check with NextAuth JWT check
 // ============================================================
 
 import { withAuth } from 'next-auth/middleware'
 import { NextResponse } from 'next/server'
+
+const PROTECTED = ['/journal', '/letters', '/companion', '/profile', '/quiz', '/comfort', '/music']
 
 export default withAuth(
   function middleware(req) {
     const path  = req.nextUrl.pathname
     const token = req.nextauth.token
 
-    // Already authed → redirect away from auth pages
+    // Already authed → redirect away from login/signup
     if (token && (path.startsWith('/auth/login') || path.startsWith('/auth/signup'))) {
       return NextResponse.redirect(new URL('/', req.url))
     }
@@ -19,15 +22,11 @@ export default withAuth(
   },
   {
     callbacks: {
+      // Return true = allow. Return false = redirect to signIn page.
       authorized({ token, req }) {
         const path = req.nextUrl.pathname
-        // Public: only auth pages and static assets
-        const isPublic =
-          path.startsWith('/auth/') ||
-          path.startsWith('/_next/') ||
-          path.startsWith('/api/auth/') ||
-          path === '/favicon.ico'
-        if (!isPublic && !token) return false
+        const isProtected = PROTECTED.some((p) => path.startsWith(p))
+        if (isProtected && !token) return false
         return true
       },
     },

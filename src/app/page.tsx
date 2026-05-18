@@ -61,10 +61,10 @@ export default function HomePage() {
               className="flex flex-col flex-1 pb-24"
             >
               <HomeHeader greeting={greeting} />
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 1, ease: [0.22, 0.61, 0.36, 1] }} className="px-5 mt-6">
-                <p className="whisper mb-3">Your sanctuary</p>
-                <h1 className="text-dreamy leading-[1.04]" style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(34px, 9.5vw, 46px)', fontWeight: 300, letterSpacing: '-0.025em' }}>A space made<br /><em style={{ fontStyle: 'italic', fontWeight: 400 }}>just for you.</em></h1>
-                <p className="mt-4 leading-[1.7]" style={{ fontFamily: 'var(--font-serif)', fontSize: '14.5px', fontWeight: 300, color: 'rgba(248,226,198,0.55)', maxWidth: '22rem' }}>Soft, safe, and always here — at 2am, in joy, in grief, in the quiet between.</p>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.7 }} className="px-5 mt-5">
+                <p className="text-[10px] uppercase tracking-[0.12em] text-lumina-purple-dream/60 mb-1.5">Your sanctuary</p>
+                <h1 className="text-[26px] font-semibold leading-tight text-dreamy">A space made<br />just for you.</h1>
+                <p className="text-sm font-light text-white/35 mt-2 leading-relaxed">Soft, safe, and always here when you need it.</p>
               </motion.div>
               <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35, duration: 0.6 }} className="mt-5">
                 <MoodSelector currentMood={currentMood} onMoodSelect={setCurrentMood} />

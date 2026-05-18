@@ -11,32 +11,16 @@ const config: Config = {
       fontFamily: {
         sora: ['var(--font-sora)', 'sans-serif'],
         nunito: ['var(--font-nunito)', 'sans-serif'],
-        serif: ['Fraunces', 'Georgia', 'serif'],
-        script: ['Caveat', 'cursive'],
         sans: ['var(--font-sora)', 'sans-serif'],
       },
       colors: {
-        // Sanctuary warm palette (new tokens override visual feel)
-        sanctuary: {
-          ink:      '#fcf0de',
-          warm:     '#f8e2c6',
-          muted:    '#e8d2bc',
-          whisper:  '#3a2a22',
-          amber:    '#f5b88a',
-          ember:    '#e89070',
-          rose:     '#f4a8a8',
-          honey:    '#fdcf9e',
-          night:    '#0a0a18',
-          dusk:     '#160d18',
-        },
-        // Core dreamy palette (legacy — kept for any direct className references)
+        // Core dreamy palette
         lumina: {
           // Deep space backgrounds
-          // Deep sanctuary night (was deep purple void)
-          void:     '#0a0a18',
-          deep:     '#0d0e22',
-          night:    '#100b1f',
-          dusk:     '#160d18',
+          void:     '#080612',
+          deep:     '#0e0a1f',
+          night:    '#100d28',
+          dusk:     '#1a1235',
           // Soft purples
           'purple-soft':   '#c4b5fd',
           'purple-dream':  '#a78bfa',
