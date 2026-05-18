@@ -1,102 +1,102 @@
-'use client'
+'use client';
 
-import { Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
-import Link from 'next/link'
-import { motion } from 'framer-motion'
-import AuthForm from '@/components/auth/AuthForm'
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Sparkles, Eye, EyeOff } from 'lucide-react';
+import Link from 'next/link';
 
-function LoginContent() {
-  const params = useSearchParams()
-  const error = params.get('error')
-
-  return (
-    <>
-      {/* Auth card */}
-      <div
-        className="glass rounded-3xl p-6"
-        style={{ boxShadow: '0 8px 48px rgba(0,0,0,0.5), inset 0 0 0 0.5px rgba(255,255,255,0.07)' }}
-      >
-        <h2 className="text-white/80 font-medium text-base mb-5">Welcome back</h2>
-
-        {error && (
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-red-400/70 text-xs mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/15"
-          >
-            Couldn&apos;t sign you in. Please try again.
-          </motion.p>
-        )}
-
-        <AuthForm mode="login" />
-      </div>
-    </>
-  )
-}
+const STARS = Array.from({ length: 35 }, (_, i) => ({
+  id: i,
+  size: (((i * 7 + 3) % 17) / 17) * 2 + 1,
+  top:  (((i * 13 + 5) % 97)) + '%',
+  left: (((i * 11 + 2) % 89)) + '%',
+  op:   (((i * 9  + 1) % 5)  / 10) + 0.1,
+}));
 
 export default function LoginPage() {
-  return (
-    <main className="relative min-h-dvh flex flex-col items-center justify-center overflow-hidden bg-lumina-void px-6">
+  const [email, setEmail]       = useState('');
+  const [password, setPassword] = useState('');
+  const [showPw, setShowPw]     = useState(false);
+  const [loading, setLoading]   = useState(false);
 
-      {/* Atmospheric background */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div
-          className="absolute -top-32 left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full opacity-[0.12]"
-          style={{
-            background: 'radial-gradient(circle, #8b5cf6 0%, transparent 70%)',
-            filter: 'blur(60px)',
-            animation: 'orbPulse 12s ease-in-out infinite',
-          }}
-        />
-        <div
-          className="absolute bottom-0 right-0 w-72 h-72 rounded-full opacity-[0.09]"
-          style={{
-            background: 'radial-gradient(circle, #ec4899 0%, transparent 70%)',
-            filter: 'blur(50px)',
-          }}
-        />
-        <div
-          className="absolute top-1/2 left-0 w-64 h-64 rounded-full opacity-[0.08]"
-          style={{
-            background: 'radial-gradient(circle, #38bdf8 0%, transparent 70%)',
-            filter: 'blur(50px)',
-          }}
-        />
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setTimeout(() => setLoading(false), 1200);
+  };
+
+  return (
+    <div className="relative min-h-screen bg-[#09091a] text-white flex items-center justify-center overflow-hidden px-4">
+      <div className="pointer-events-none fixed inset-0">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_30%_20%,rgba(88,28,220,0.16),transparent)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_75%_85%,rgba(20,180,160,0.1),transparent)]" />
+        {STARS.map(s => (
+          <div key={s.id} className="absolute rounded-full bg-white"
+            style={{ width: s.size, height: s.size, top: s.top, left: s.left, opacity: s.op }} />
+        ))}
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
-        className="relative z-10 w-full max-w-[360px] flex flex-col gap-8"
-      >
-        <div className="text-center flex flex-col items-center gap-3">
-          <motion.div
-            animate={{ y: [0, -6, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-            className="text-4xl"
-          >
-            🌙
-          </motion.div>
-          <div>
-            <h1 className="text-3xl font-semibold text-dreamy tracking-tight">Lumina</h1>
-            <p className="text-white/35 text-sm font-light mt-1">Your emotional sanctuary</p>
+      <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="relative z-10 w-full max-w-sm">
+
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-white/[0.06] border border-white/[0.1] mb-4">
+            <Sparkles size={22} className="text-violet-400/70" />
           </div>
+          <p className="text-[10px] uppercase tracking-[0.35em] text-white/25 mb-1">Welcome back</p>
+          <h1 className="text-2xl font-light tracking-wide text-white/90">Lumina</h1>
         </div>
 
-        <Suspense fallback={<div className="glass rounded-3xl p-6 h-40" />}>
-          <LoginContent />
-        </Suspense>
-
-        <p className="text-center text-white/30 text-sm">
-          New here?{' '}
-          <Link href="/auth/signup" className="text-lumina-purple-dream hover:text-lumina-purple-soft transition-colors">
-            Create your sanctuary
-          </Link>
-        </p>
-
+        <div className="bg-white/[0.04] border border-white/[0.08] rounded-3xl p-6 backdrop-blur-sm">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="text-[11px] text-white/30 uppercase tracking-widest mb-1.5 block">Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                required
+                className="w-full bg-white/[0.05] border border-white/[0.08] rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 outline-none focus:border-violet-400/40 transition-colors"
+              />
+            </div>
+            <div>
+              <label className="text-[11px] text-white/30 uppercase tracking-widest mb-1.5 block">Password</label>
+              <div className="relative">
+                <input
+                  type={showPw ? 'text' : 'password'}
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  className="w-full bg-white/[0.05] border border-white/[0.08] rounded-xl px-4 py-3 pr-11 text-sm text-white placeholder-white/20 outline-none focus:border-violet-400/40 transition-colors"
+                />
+                <button type="button" onClick={() => setShowPw(p => !p)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/25 hover:text-white/50 transition-colors">
+                  {showPw ? <EyeOff size={16}/> : <Eye size={16}/>}
+                </button>
+              </div>
+            </div>
+            <button type="submit" disabled={loading}
+              className="w-full py-3.5 mt-2 rounded-xl font-medium text-sm tracking-wide transition-all active:scale-[0.98] disabled:opacity-50"
+              style={{
+                background: 'linear-gradient(135deg, rgba(139,92,246,0.4), rgba(45,212,191,0.25))',
+                border: '1px solid rgba(139,92,246,0.3)',
+                color: '#c4b5fd',
+                boxShadow: '0 0 28px rgba(139,92,246,0.15)',
+              }}>
+              {loading ? 'Signing in…' : 'Sign in'}
+            </button>
+          </form>
+          <p className="text-center text-xs text-white/20 mt-5">
+            No account?{' '}
+            <Link href="/auth/signup" className="text-violet-400/60 hover:text-violet-400/90 transition-colors">
+              Sign up
+            </Link>
+          </p>
+        </div>
       </motion.div>
-    </main>
-  )
+    </div>
+  );
 }
