@@ -2,7 +2,8 @@
 import AtmosphericBg from '@/components/ui/AtmosphericBg';
 import BottomNav from '@/components/ui/BottomNav';
 import { motion } from 'framer-motion';
-import { User } from 'lucide-react';
+import { User, LogOut } from 'lucide-react';
+import { signOut } from 'next-auth/react';
 
 export default function YouPage() {
   return (
@@ -16,6 +17,20 @@ export default function YouPage() {
           <p className="text-[10px] uppercase tracking-[0.35em] text-white/25">You</p>
           <h1 className="text-3xl font-light tracking-wide text-white/80">Coming soon</h1>
           <p className="text-white/25 text-sm max-w-xs">Your profile is taking shape.</p>
+
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => signOut({ callbackUrl: '/auth/login' })}
+            className="mt-6 flex items-center gap-2 px-5 py-2.5 rounded-2xl text-[12px] transition-all"
+            style={{
+              background: 'rgba(255,255,255,0.04)',
+              border: '0.5px solid rgba(255,255,255,0.1)',
+              color: 'rgba(255,255,255,0.35)',
+            }}
+          >
+            <LogOut size={14} strokeWidth={1.8} />
+            Sign out
+          </motion.button>
         </motion.div>
       </div>
       <BottomNav />

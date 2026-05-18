@@ -1,6 +1,8 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { signOut } from 'next-auth/react'
+import { LogOut } from 'lucide-react'
 
 interface Props {
   greeting: { text: string; sub: string }
@@ -19,16 +21,22 @@ export default function HomeHeader({ greeting }: Props) {
         </p>
       </div>
 
-      {/* Right: avatar / settings */}
+      {/* Right: logout */}
       <motion.button
         whileTap={{ scale: 0.92 }}
-        className="w-9 h-9 rounded-full flex items-center justify-center text-sm"
+        onClick={() => signOut({ callbackUrl: '/auth/login' })}
+        className="flex items-center gap-1.5 px-3 py-2 rounded-full text-[11px] transition-all"
         style={{
-          background: 'linear-gradient(135deg, #8b5cf6, #6d28d9)',
+          background: 'rgba(255,255,255,0.04)',
+          border: '0.5px solid rgba(255,255,255,0.09)',
+          color: 'rgba(255,255,255,0.35)',
         }}
-        aria-label="Profile"
+        aria-label="Sign out"
       >
-        ✦
+        <LogOut size={13} strokeWidth={1.8} />
+        <span style={{ fontFamily: 'var(--font-sora, sans-serif)', letterSpacing: '0.05em' }}>
+          Sign out
+        </span>
       </motion.button>
     </header>
   )

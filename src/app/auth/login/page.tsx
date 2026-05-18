@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Sparkles, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
@@ -14,15 +16,26 @@ const STARS = Array.from({ length: 35 }, (_, i) => ({
 }));
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
   const [showPw, setShowPw]     = useState(false);
   const [loading, setLoading]   = useState(false);
+  const [error, setError]       = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => setLoading(false), 1200);
+    setError('');
+    const res = await signIn('credentials', {
+      email, password, redirect: false,
+    });
+    if (res?.ok) {
+      router.push('/home');
+    } else {
+      setError('Invalid email or password.');
+      setLoading(false);
+    }
   };
 
   return (
@@ -78,6 +91,9 @@ export default function LoginPage() {
                 </button>
               </div>
             </div>
+            {error && (
+              <p className="text-[12px] text-red-400/80 text-center -mt-1 mb-1">{error}</p>
+            )}
             <button type="submit" disabled={loading}
               className="w-full py-3.5 mt-2 rounded-xl font-medium text-sm tracking-wide transition-all active:scale-[0.98] disabled:opacity-50"
               style={{

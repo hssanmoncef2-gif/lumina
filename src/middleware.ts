@@ -1,31 +1,33 @@
 // ============================================================
 // LUMINA — Middleware (NextAuth)
-// Replaces Supabase session check with NextAuth JWT check
 // ============================================================
 
 import { withAuth } from 'next-auth/middleware'
 import { NextResponse } from 'next/server'
 
-const PROTECTED = ['/journal', '/letters', '/companion', '/profile', '/quiz', '/comfort', '/music']
+const PROTECTED = [
+  '/home', '/journal', '/letters', '/companion', '/lumina',
+  '/profile', '/you', '/quiz', '/comfort', '/music',
+  '/library', '/onboarding',
+]
 
 export default withAuth(
   function middleware(req) {
     const path  = req.nextUrl.pathname
     const token = req.nextauth.token
 
-    // Already authed → redirect away from login/signup
+    // Already authed → redirect away from login/signup to home
     if (token && (path.startsWith('/auth/login') || path.startsWith('/auth/signup'))) {
-      return NextResponse.redirect(new URL('/', req.url))
+      return NextResponse.redirect(new URL('/home', req.url))
     }
 
     return NextResponse.next()
   },
   {
     callbacks: {
-      // Return true = allow. Return false = redirect to signIn page.
       authorized({ token, req }) {
         const path = req.nextUrl.pathname
-        const isProtected = PROTECTED.some((p) => path.startsWith(p))
+        const isProtected = PROTECTED.some((p) => path === p || path.startsWith(p + '/'))
         if (isProtected && !token) return false
         return true
       },

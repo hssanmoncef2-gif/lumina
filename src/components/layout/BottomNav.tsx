@@ -4,12 +4,12 @@ import { usePathname, useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 
 const TABS = [
-  { icon: '🏠', label: 'Home',    href: '/' },
+  { icon: '🏠', label: 'Home',    href: '/home' },
   { icon: '🎵', label: 'Music',   href: '/music' },
-  { icon: '✦',  label: 'Lumina',  href: '/companion' },
+  { icon: '✦',  label: 'Lumina',  href: '/lumina' },
   { icon: '📚', label: 'Library', href: '/library' },
   { icon: '📖', label: 'Journal', href: '/journal' },
-  { icon: '🤍', label: 'You',     href: '/profile' },
+  { icon: '🤍', label: 'You',     href: '/you' },
 ]
 
 export default function BottomNav() {
@@ -28,7 +28,7 @@ export default function BottomNav() {
     >
       <div className="flex justify-around px-2 pt-2 pb-3">
         {TABS.map((tab) => {
-          const isActive = pathname === tab.href
+          const isActive = pathname === tab.href || pathname.startsWith(tab.href + '/')
 
           return (
             <button
@@ -39,7 +39,6 @@ export default function BottomNav() {
               aria-label={tab.label}
               aria-current={isActive ? 'page' : undefined}
             >
-              {/* Active indicator */}
               {isActive && (
                 <motion.div
                   layoutId="nav-indicator"
@@ -48,7 +47,6 @@ export default function BottomNav() {
                   transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                 />
               )}
-
               <span className="relative text-lg leading-none">{tab.icon}</span>
               <span
                 className="relative text-[8px] font-light tracking-[0.08em] uppercase"
