@@ -1122,3 +1122,65 @@ textarea::placeholder {
 [data-mood="anxious"]  { background: #08000f !important; }
 [data-mood="heavy"]    { background: #050309 !important; }
 
+
+/* ============================================================
+   DESIGN OVERHAUL — polish & liveness
+   ============================================================ */
+
+/* Richer dreamy gradient */
+.text-dreamy {
+  background: linear-gradient(135deg, #f5f0ff 0%, #d4b8ff 30%, #a5c8ff 65%, #ffd6ef 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+/* Subtle grain texture on cards */
+.grain {
+  position: relative;
+}
+.grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+/* Smooth font rendering boost */
+h1, h2, h3 {
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'kern' 1, 'liga' 1;
+}
+
+/* Better quote typography */
+.quote-body {
+  font-size: 14px !important;
+  line-height: 1.7 !important;
+  color: rgba(255,255,255,0.72) !important;
+  font-weight: 300 !important;
+  letter-spacing: 0.005em !important;
+}
+
+/* Breathing animation for active states */
+@keyframes breathe {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50%       { opacity: 1;   transform: scale(1.04); }
+}
+
+/* Glass card with more depth */
+.glass-deep {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+/* Ink separator */
+.sep {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06) 30%, rgba(255,255,255,0.06) 70%, transparent);
+  margin: 0 20px;
+}
