@@ -57,79 +57,28 @@ export default function HomePage() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 1, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="flex flex-col flex-1 pb-28"
+              transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className="flex flex-col flex-1 pb-24"
             >
-              {/* Header */}
               <HomeHeader greeting={greeting} />
-
-              {/* Hero */}
-              <motion.div
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15, duration: 0.8 }}
-                className="px-5 mt-8 mb-7"
-              >
-                <h1
-                  className="text-dreamy leading-[1.15]"
-                  style={{ fontSize: 'clamp(28px, 8vw, 36px)', fontWeight: 500, letterSpacing: '-0.03em' }}
-                >
-                  A space made<br />just for you.
-                </h1>
-                <p className="mt-3 text-[13px] font-light leading-relaxed" style={{ color: 'rgba(255,255,255,0.32)' }}>
-                  Soft, safe, and always here when you need it.
-                </p>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.7 }} className="px-5 mt-5">
+                <p className="text-[10px] uppercase tracking-[0.12em] text-lumina-purple-dream/60 mb-1.5">Your sanctuary</p>
+                <h1 className="text-[26px] font-semibold leading-tight text-dreamy">A space made<br />just for you.</h1>
+                <p className="text-sm font-light text-white/35 mt-2 leading-relaxed">Soft, safe, and always here when you need it.</p>
               </motion.div>
-
-              {/* Mood */}
-              <motion.div
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3, duration: 0.7 }}
-              >
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35, duration: 0.6 }} className="mt-5">
                 <MoodSelector currentMood={currentMood} onMoodSelect={setCurrentMood} />
               </motion.div>
-
-              {/* Divider */}
-              <div className="mx-5 mt-6 mb-0 h-px" style={{ background: 'rgba(255,255,255,0.04)' }} />
-
-              {/* Music */}
-              <motion.div
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.42, duration: 0.7 }}
-                className="mt-6 px-5"
-              >
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45, duration: 0.6 }} className="mt-3.5 px-5">
                 <MusicCard mood={currentMood} />
               </motion.div>
-
-              {/* Quote */}
-              <motion.div
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.54, duration: 0.7 }}
-                className="mt-3 px-5"
-              >
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55, duration: 0.6 }} className="mt-3.5 px-5">
                 <QuoteCard mood={currentMood} />
               </motion.div>
-
-              {/* Quick actions */}
-              <motion.div
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.64, duration: 0.7 }}
-                className="mt-3"
-              >
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65, duration: 0.6 }} className="mt-3.5">
                 <QuickActions />
               </motion.div>
-
-              {/* Comfort */}
-              <motion.div
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.74, duration: 0.7 }}
-                className="mt-3 px-5"
-              >
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.75, duration: 0.6 }} className="mt-3.5 px-5">
                 <ComfortPill />
               </motion.div>
             </motion.div>
