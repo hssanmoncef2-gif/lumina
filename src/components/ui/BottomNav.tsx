@@ -5,12 +5,12 @@ import { usePathname } from 'next/navigation';
 import { Home, Music, Sparkles, BookOpen, FileText, Heart } from 'lucide-react';
 
 const NAV_ITEMS = [
-  { icon: Home,     label: 'HOME',    href: '/home'      },
-  { icon: Music,    label: 'MUSIC',   href: '/music'     },
-  { icon: Sparkles, label: 'LUMINA',  href: '/lumina'    },
-  { icon: BookOpen, label: 'LIBRARY', href: '/library'   },
-  { icon: FileText, label: 'JOURNAL', href: '/journal'   },
-  { icon: Heart,    label: 'YOU',     href: '/you'       },
+  { icon: Home,     label: 'HOME',    href: '/home'    as const },
+  { icon: Music,    label: 'MUSIC',   href: '/music'   as const },
+  { icon: Sparkles, label: 'LUMINA',  href: '/lumina'  as const },
+  { icon: BookOpen, label: 'LIBRARY', href: '/library' as const },
+  { icon: FileText, label: 'JOURNAL', href: '/journal' as const },
+  { icon: Heart,    label: 'YOU',     href: '/you'     as const },
 ];
 
 export default function BottomNav() {
