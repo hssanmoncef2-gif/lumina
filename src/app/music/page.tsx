@@ -446,11 +446,12 @@ export default function MusicPage() {
 
       <nav className="nav">
         {[
-          {icon:'🏠',label:'Home',href:'/'},
+          {icon:'🏠',label:'Home',href:'/home'},
           {icon:'🎵',label:'Music',href:'/music'},
-          {icon:'✦',label:'Lumina',href:'/companion'},
+          {icon:'✦',label:'Lumina',href:'/lumina'},
+          {icon:'📚',label:'Library',href:'/library'},
           {icon:'📖',label:'Journal',href:'/journal'},
-          {icon:'🤍',label:'You',href:'/profile'},
+          {icon:'🤍',label:'You',href:'/you'},
         ].map(t => (
           <button key={t.href} className={`nav-btn${t.href==='/music'?' on':''}`}
             onClick={() => router.push(t.href as any)}>
