@@ -174,7 +174,7 @@ export default function JournalPage() {
                 )}
               </motion.div>
 
-              {/* Filter tabs */
+              {/* Filter tabs */}
               {entries.length > 0 && (
                 <motion.div
                   initial={{ opacity: 0 }}
