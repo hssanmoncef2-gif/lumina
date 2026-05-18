@@ -31,59 +31,85 @@ export default function MoodSelector({ currentMood, onMoodSelect }: Props) {
   return (
     <div className="px-5">
       <div
-        className="rounded-[24px] p-4"
+        className="relative rounded-[28px] p-5 overflow-hidden"
         style={{
-          background: 'rgba(255,255,255,0.035)',
-          border: '1px solid rgba(255,255,255,0.07)',
-          backdropFilter: 'blur(16px)',
+          background:
+            'linear-gradient(160deg, rgba(255,234,206,0.045) 0%, rgba(232,168,140,0.025) 60%, rgba(220,180,160,0.02) 100%)',
+          border: '1px solid rgba(252,207,158,0.10)',
+          backdropFilter: 'blur(20px) saturate(115%)',
+          boxShadow: '0 24px 60px -28px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,234,206,0.06)',
         }}
       >
-        <p className="text-[10px] uppercase tracking-[0.14em] mb-3.5" style={{ color: 'rgba(255,255,255,0.28)' }}>
-          How does your heart feel right now?
-        </p>
+        {/* candle glow at top */}
+        <div
+          className="pointer-events-none absolute -top-16 left-1/2 -translate-x-1/2 w-64 h-32 rounded-full opacity-40"
+          style={{ background: 'radial-gradient(ellipse, rgba(252,178,110,0.25), transparent 65%)', filter: 'blur(20px)' }}
+        />
 
-        <div className="grid grid-cols-4 gap-2">
+        <div className="relative flex items-center gap-3 mb-5">
+          <span className="ornament-rule" />
+          <p
+            className="text-[12px] tracking-wide"
+            style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontWeight: 300, color: 'rgba(248,226,198,0.7)' }}
+          >
+            how does your heart feel right now?
+          </p>
+          <span className="ornament-rule" />
+        </div>
+
+        <div className="relative grid grid-cols-4 gap-2.5">
           {MOODS.map((mood, i) => {
             const isActive = currentMood === mood.id
+            const dimmed = currentMood !== null && !isActive
             return (
               <motion.button
                 key={mood.id}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05, duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-                whileTap={{ scale: 0.88 }}
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: dimmed ? 0.35 : 1, y: 0 }}
+                transition={{ delay: i * 0.06, duration: 0.7, ease: [0.22, 0.61, 0.36, 1] }}
+                whileTap={{ scale: 0.92 }}
                 onClick={() => onMoodSelect(mood.id)}
-                className="relative flex flex-col items-center gap-1.5 py-3 rounded-[16px] transition-all duration-400"
+                className="relative flex flex-col items-center gap-2 py-3.5 rounded-[20px]"
                 style={{
-                  border: `1px solid ${isActive ? mood.border : 'rgba(255,255,255,0.07)'}`,
-                  background: isActive ? mood.activeGradient : 'rgba(255,255,255,0.02)',
-                  boxShadow: isActive ? `0 0 20px ${mood.glowColor}, 0 4px 12px rgba(0,0,0,0.3)` : 'none',
-                  transform: isActive ? 'translateY(-3px) scale(1.02)' : 'translateY(0) scale(1)',
+                  border: `1px solid ${isActive ? mood.border : 'rgba(252,207,158,0.08)'}`,
+                  background: isActive
+                    ? mood.activeGradient
+                    : 'linear-gradient(160deg, rgba(255,234,206,0.02), rgba(255,200,168,0.008))',
+                  boxShadow: isActive
+                    ? `0 0 28px ${mood.glowColor}, 0 12px 28px -10px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,234,206,0.18)`
+                    : 'none',
+                  transform: isActive ? 'translateY(-4px) scale(1.04)' : 'translateY(0) scale(1)',
+                  transition: 'transform 700ms cubic-bezier(0.22,0.61,0.36,1), box-shadow 900ms ease, background 900ms ease, border-color 900ms ease, opacity 900ms ease',
                 }}
                 aria-pressed={isActive}
                 aria-label={`Mood: ${mood.label}`}
               >
                 <motion.span
-                  className="text-[20px] leading-none"
+                  className="text-[22px] leading-none"
                   animate={isActive ? {
-                    scale: [1, 1.2, 1],
-                    rotate: mood.id === 'alive' ? [0, 5, -5, 0] : 0,
+                    scale: [1, 1.18, 1],
+                    rotate: mood.id === 'alive' ? [0, 4, -4, 0] : 0,
                   } : { scale: 1 }}
-                  transition={{ duration: 2.5, repeat: isActive ? Infinity : 0, ease: 'easeInOut' }}
+                  transition={{ duration: 3.5, repeat: isActive ? Infinity : 0, ease: 'easeInOut' }}
                 >
                   {mood.emoji}
                 </motion.span>
                 <span
-                  className="text-[9px] font-medium tracking-wide"
-                  style={{ color: isActive ? 'rgba(255,255,255,0.92)' : 'rgba(255,255,255,0.35)' }}
+                  className="text-[10px] tracking-wide"
+                  style={{
+                    fontFamily: 'var(--font-serif)',
+                    fontWeight: isActive ? 400 : 300,
+                    color: isActive ? '#fff2d8' : 'rgba(232,210,188,0.5)',
+                  }}
                 >
                   {mood.label}
                 </span>
                 {isActive && (
                   <motion.span
                     initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    className="text-[8px] tracking-wider"
+                    animate={{ opacity: 0.85, height: 'auto' }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                    className="text-[8px] tracking-[0.18em] uppercase font-light"
                     style={{ color: mood.glowColor }}
                   >
                     {mood.sublabel}

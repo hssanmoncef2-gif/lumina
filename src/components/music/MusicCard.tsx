@@ -51,19 +51,30 @@ export default function MusicCard({ mood }: Props) {
         </p>
 
         <div className="flex items-center gap-3.5 mb-4">
-          {/* Vinyl disc */}
+          {/* Vinyl / cassette — abstract atmospheric disc */}
           <motion.div
-            className="relative flex-shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center"
+            className="relative flex-shrink-0 w-16 h-16 rounded-full flex items-center justify-center"
             animate={isPlaying ? { rotate: 360 } : { rotate: 0 }}
-            transition={{ duration: 10, repeat: isPlaying ? Infinity : 0, ease: 'linear' }}
+            transition={{ duration: 14, repeat: isPlaying ? Infinity : 0, ease: 'linear' }}
             style={{
-              background: `conic-gradient(from 0deg, ${track.color}30, rgba(0,0,0,0.2), ${track.color}18, rgba(0,0,0,0.3), ${track.color}30)`,
-              border: `1px solid ${track.color}25`,
-              boxShadow: isPlaying ? `0 0 24px ${track.color}30` : `0 0 0 ${track.color}00`,
+              background: `radial-gradient(circle at 30% 30%, ${track.color}55 0%, ${track.color}18 38%, rgba(8,6,12,0.95) 70%, ${track.color}15 100%)`,
+              border: `1px solid ${track.color}35`,
+              boxShadow: isPlaying
+                ? `0 0 26px ${track.color}50, inset 0 0 18px rgba(0,0,0,0.5)`
+                : `0 8px 20px -8px rgba(0,0,0,0.6), inset 0 0 14px rgba(0,0,0,0.4)`,
             }}
           >
-            <div className="text-xl z-10">{track.emoji}</div>
-            <div className="absolute inset-[40%] rounded-full" style={{ background: 'rgba(8,6,18,0.8)' }} />
+            {/* concentric grooves */}
+            <div className="absolute inset-1 rounded-full" style={{ border: `1px solid ${track.color}18` }} />
+            <div className="absolute inset-3 rounded-full" style={{ border: `1px solid ${track.color}12` }} />
+            {/* center label */}
+            <div
+              className="absolute inset-[38%] rounded-full"
+              style={{
+                background: `radial-gradient(circle, ${track.color}80, ${track.color}30)`,
+                boxShadow: `0 0 8px ${track.color}60`,
+              }}
+            />
           </motion.div>
 
           <div className="flex-1 min-w-0">

@@ -68,34 +68,45 @@ export default function QuoteCard({ mood }: Props) {
     <motion.button
       onClick={next}
       whileTap={{ scale: 0.985 }}
-      className="w-full text-left rounded-[24px] p-5 transition-all duration-300"
+      className="relative w-full text-left rounded-[28px] p-7 overflow-hidden"
       style={{
-        background: 'rgba(255,255,255,0.028)',
-        border: '1px solid rgba(255,255,255,0.065)',
+        background:
+          'linear-gradient(160deg, rgba(255,234,206,0.06) 0%, rgba(244,200,168,0.025) 50%, rgba(232,168,140,0.02) 100%)',
+        border: '1px solid rgba(252,207,158,0.14)',
+        boxShadow: '0 20px 48px -24px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,234,206,0.06)',
+        backdropFilter: 'blur(16px)',
       }}
     >
-      {/* Animated sparkle */}
-      <motion.div
-        animate={{ opacity: [0.5, 1, 0.5], scale: [0.9, 1.1, 0.9] }}
-        transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
-        className="text-base mb-3"
-        style={{ color: 'rgba(196,181,253,0.6)' }}
-      >
-        ✦
-      </motion.div>
+      {/* warm paper grain */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-30"
+        style={{
+          background:
+            'radial-gradient(ellipse at 80% 0%, rgba(252,178,110,0.10), transparent 55%), radial-gradient(ellipse at 0% 100%, rgba(244,168,168,0.06), transparent 55%)',
+        }}
+      />
 
-      {/* Quote */}
+      {/* opening ornament */}
+      <div className="relative flex items-center gap-2 mb-5">
+        <span className="ornament-rule" />
+        <span style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: '10px', color: 'rgba(252,207,158,0.55)', letterSpacing: '0.1em' }}>
+          a note
+        </span>
+        <span className="ornament-rule" />
+      </div>
+
       <AnimatePresence mode="wait">
         <motion.p
           key={quote.text}
-          initial={{ opacity: 0, y: 8 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }}
-          transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="quote-body"
-          style={{ fontFamily: 'var(--font-nunito)', fontSize: '13.5px', lineHeight: 1.75, color: 'rgba(255,255,255,0.7)', fontStyle: 'italic' }}
+          transition={{ duration: 0.7, ease: [0.22, 0.61, 0.36, 1] }}
+          className="relative quote-body"
         >
-          "{quote.text}"
+          <span style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: '34px', lineHeight: 0, color: 'rgba(252,207,158,0.4)', marginRight: '2px', verticalAlign: '-12px' }}>“</span>
+          {quote.text}
+          <span style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: '34px', lineHeight: 0, color: 'rgba(252,207,158,0.4)', marginLeft: '2px', verticalAlign: '-12px' }}>”</span>
         </motion.p>
       </AnimatePresence>
 
@@ -105,17 +116,24 @@ export default function QuoteCard({ mood }: Props) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.4, delay: 0.15 }}
-          className="text-[10px] mt-3 tracking-[0.08em]"
-          style={{ color: 'rgba(196,181,253,0.3)' }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="relative text-[11px] mt-5"
+          style={{
+            fontFamily: 'var(--font-serif)',
+            fontStyle: 'italic',
+            fontWeight: 300,
+            color: 'rgba(248,226,198,0.45)',
+            letterSpacing: '0.02em',
+          }}
         >
           — {quote.sub}
         </motion.p>
       </AnimatePresence>
 
-      <p className="text-[8px] mt-3.5 text-right tracking-widest uppercase" style={{ color: 'rgba(255,255,255,0.1)' }}>
-        tap for another
-      </p>
+      <div className="relative flex items-center justify-between mt-5">
+        <span className="ornament-rule" />
+        <span className="whisper">tap for another</span>
+      </div>
     </motion.button>
   )
 }
