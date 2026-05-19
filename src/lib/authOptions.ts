@@ -35,7 +35,7 @@ export const authOptions: NextAuthOptions = {
 
   session: {
     strategy: 'jwt',
-    maxAge:   60 * 60 * 24 * 7, // 7 days — token expires even if user never logs out
+    maxAge:   60 * 60 * 24 * 7, // 7 days
   },
 
   callbacks: {
@@ -49,7 +49,7 @@ export const authOptions: NextAuthOptions = {
     },
 
     // On every request, verify the JWT's sessionVersion still matches the DB.
-    // If the user logged out (which bumps sessionVersion), the old token is rejected.
+    // Only invalidate on a CONFIRMED mismatch — fail open on DB errors.
     async session({ session, token }) {
       if (!token?.id) return { ...session, user: undefined } as any
 
@@ -57,12 +57,17 @@ export const authOptions: NextAuthOptions = {
         await connectDB()
         const dbUser = await User.findById(token.id).select('sessionVersion').lean()
 
-        if (!dbUser || (dbUser as any).sessionVersion !== token.sessionVersion) {
-          // Session is stale — return empty session so NextAuth treats user as logged out
-          return { ...session, user: undefined } as any
+        if (dbUser) {
+          const dbVersion    = (dbUser as any).sessionVersion ?? 0
+          const tokenVersion = (token.sessionVersion as number) ?? 0
+          if (dbVersion !== tokenVersion) {
+            // User logged out from another device — kill this session
+            return { ...session, user: undefined } as any
+          }
         }
+        // If dbUser is null (deleted account), fall through and let session expire naturally
       } catch {
-        return { ...session, user: undefined } as any
+        // DB unreachable — let session through rather than log everyone out
       }
 
       if (session.user) {
