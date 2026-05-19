@@ -1,39 +1,65 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import type { MoodId } from '@/types'
 
-// Mood → track suggestions (will connect to real engine in Phase 4)
-const MOOD_TRACKS: Record<string, { title: string; category: string; emoji: string; gradient: string }> = {
-  calm:     { title: 'Rainy Tokyo Nights',   category: 'Dreamy ambient · lo-fi',    emoji: '🌊', gradient: 'linear-gradient(135deg, rgba(139,92,246,0.22), rgba(59,130,246,0.16))' },
-  drifting: { title: 'Ocean at 3AM',         category: 'Ocean calm · ambient',       emoji: '🌙', gradient: 'linear-gradient(135deg, rgba(59,130,246,0.22), rgba(34,211,238,0.16))' },
-  soft:     { title: 'Cherry Blossom Rain',  category: 'Soft dreamscape · gentle',   emoji: '🌸', gradient: 'linear-gradient(135deg, rgba(236,72,153,0.20), rgba(139,92,246,0.16))' },
-  alive:    { title: 'Electric Dawn',        category: 'Motivation · uplifting',     emoji: '⚡', gradient: 'linear-gradient(135deg, rgba(34,197,94,0.20), rgba(59,130,246,0.16))' },
-  heavy:    { title: 'Let It Rain',          category: 'Emotional release · healing', emoji: '🌧️', gradient: 'linear-gradient(135deg, rgba(99,102,241,0.22), rgba(139,92,246,0.18))' },
-  default:  { title: 'Soft Cloudscape',      category: 'Dreamy ambient · comfort',   emoji: '☁️', gradient: 'linear-gradient(135deg, rgba(139,92,246,0.22), rgba(59,130,246,0.16))' },
+const MOOD_TRACKS: Record<string, { title: string; category: string; emoji: string; gradient: string; ytId: string }> = {
+  calm:     { title: 'Rainy Tokyo Nights',   category: 'Dreamy ambient · lo-fi',     emoji: '🌊', gradient: 'linear-gradient(135deg, rgba(139,92,246,0.22), rgba(59,130,246,0.16))',  ytId: 'mPZkdNFkNps' },
+  drifting: { title: 'Ocean at 3AM',         category: 'Ocean calm · ambient',        emoji: '🌙', gradient: 'linear-gradient(135deg, rgba(59,130,246,0.22), rgba(34,211,238,0.16))',  ytId: 'Nep1qytq9JM' },
+  soft:     { title: 'Cherry Blossom Rain',  category: 'Soft dreamscape · gentle',    emoji: '🌸', gradient: 'linear-gradient(135deg, rgba(236,72,153,0.20), rgba(139,92,246,0.16))',  ytId: 'mPZkdNFkNps' },
+  alive:    { title: 'Electric Dawn',        category: 'Motivation · uplifting',      emoji: '⚡', gradient: 'linear-gradient(135deg, rgba(34,197,94,0.20), rgba(59,130,246,0.16))',   ytId: 'xNN7iTA57jM' },
+  heavy:    { title: 'Let It Rain',          category: 'Emotional release · healing', emoji: '🌧️', gradient: 'linear-gradient(135deg, rgba(99,102,241,0.22), rgba(139,92,246,0.18))', ytId: 'mPZkdNFkNps' },
+  anxious:  { title: 'Brown Noise Flow',     category: 'Grounding · focus',           emoji: '🤎', gradient: 'linear-gradient(135deg, rgba(120,80,50,0.22), rgba(99,102,241,0.16))',   ytId: 'RqzGzwTY-6w' },
+  default:  { title: 'Soft Cloudscape',      category: 'Dreamy ambient · comfort',    emoji: '☁️', gradient: 'linear-gradient(135deg, rgba(139,92,246,0.22), rgba(59,130,246,0.16))',  ytId: 'Nep1qytq9JM' },
 }
 
-// Animated visualizer bar heights
 const BAR_HEIGHTS = [8,14,10,18,12,20,8,15,11,17,9,13,19,7,16]
 
-interface Props {
-  mood: MoodId | null
-}
+interface Props { mood: MoodId | null }
 
 export default function MusicCard({ mood }: Props) {
   const [isPlaying, setIsPlaying] = useState(false)
-  const [progress, setProgress] = useState(0.38)
+  const [progress, setProgress] = useState(0)
+  const iframeRef = useRef<HTMLIFrameElement|null>(null)
+  const progressRef = useRef<ReturnType<typeof setInterval>|null>(null)
   const track = MOOD_TRACKS[mood ?? 'default'] ?? MOOD_TRACKS.default
 
-  // Simulate progress when playing
+  // Stop when mood changes
   useEffect(() => {
-    if (!isPlaying) return
-    const interval = setInterval(() => {
-      setProgress(p => p >= 1 ? 0 : p + 0.002)
-    }, 100)
-    return () => clearInterval(interval)
+    postCmd('pauseVideo')
+    setIsPlaying(false)
+    setProgress(0)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mood])
+
+  // Simulate progress while playing (YouTube iframe doesn't expose currentTime easily)
+  useEffect(() => {
+    if (progressRef.current) clearInterval(progressRef.current)
+    if (isPlaying) {
+      progressRef.current = setInterval(() => {
+        setProgress(p => p >= 1 ? 0 : p + 0.001)
+      }, 100)
+    }
+    return () => { if (progressRef.current) clearInterval(progressRef.current) }
   }, [isPlaying])
+
+  function postCmd(func: string, args: any[] = []) {
+    iframeRef.current?.contentWindow?.postMessage(
+      JSON.stringify({ event: 'command', func, args }), '*'
+    )
+  }
+
+  function togglePlay() {
+    if (isPlaying) {
+      postCmd('pauseVideo')
+      setIsPlaying(false)
+    } else {
+      postCmd('playVideo')
+      postCmd('setVolume', [70])
+      setIsPlaying(true)
+    }
+  }
 
   return (
     <div
@@ -44,14 +70,19 @@ export default function MusicCard({ mood }: Props) {
         backdropFilter: 'blur(12px)',
       }}
     >
-      {/* Label */}
-      <p className="text-[10px] uppercase tracking-[0.1em] text-lumina-purple-soft/50 mb-2.5">
-        Now playing
-      </p>
+      {/* Hidden YouTube iframe */}
+      <div style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden', opacity: 0, pointerEvents: 'none' }}>
+        <iframe
+          ref={iframeRef}
+          src={`https://www.youtube.com/embed/${track.ytId}?enablejsapi=1&loop=1&playlist=${track.ytId}&autoplay=0&controls=0&mute=0`}
+          allow="autoplay"
+          title={track.title}
+        />
+      </div>
 
-      {/* Track row */}
+      <p className="text-[10px] uppercase tracking-[0.1em] text-lumina-purple-soft/50 mb-2.5">Now playing</p>
+
       <div className="flex items-center gap-3">
-        {/* Art */}
         <motion.div
           animate={isPlaying ? { scale: [1, 1.04, 1] } : { scale: 1 }}
           transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
@@ -64,16 +95,14 @@ export default function MusicCard({ mood }: Props) {
           {track.emoji}
         </motion.div>
 
-        {/* Info */}
         <div className="flex-1 min-w-0">
           <p className="text-[13px] font-medium text-white/90 truncate">{track.title}</p>
           <p className="text-[10px] text-lumina-purple-soft/55 mt-0.5">{track.category}</p>
         </div>
 
-        {/* Play/pause */}
         <motion.button
           whileTap={{ scale: 0.88 }}
-          onClick={() => setIsPlaying(p => !p)}
+          onClick={togglePlay}
           className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-200"
           style={{
             background: 'rgba(255,255,255,0.12)',
@@ -85,7 +114,7 @@ export default function MusicCard({ mood }: Props) {
         </motion.button>
       </div>
 
-      {/* Audio visualizer */}
+      {/* Visualizer */}
       <div className="flex gap-[2px] items-end h-5 mt-3">
         {BAR_HEIGHTS.map((h, i) => (
           <motion.div
@@ -94,9 +123,7 @@ export default function MusicCard({ mood }: Props) {
             style={{ background: 'rgba(167,139,250,0.5)' }}
             animate={isPlaying ? {
               height: [`${h * 0.4 + 2}px`, `${h}px`, `${h * 0.6 + 2}px`],
-            } : {
-              height: '3px',
-            }}
+            } : { height: '3px' }}
             transition={{
               duration: 0.5 + Math.random() * 0.6,
               repeat: Infinity,
