@@ -8,7 +8,7 @@ import { NextResponse } from 'next/server'
 const PROTECTED = [
   '/home', '/journal', '/letters', '/companion', '/lumina',
   '/profile', '/you', '/quiz', '/comfort', '/music',
-  '/library', '/onboarding',
+  '/library', '/onboarding','/audiobooks',
 ]
 
 export default withAuth(
