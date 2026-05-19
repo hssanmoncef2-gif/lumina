@@ -8,6 +8,7 @@ const TABS = [
   { icon: '🎵', label: 'Music',   href: '/music' },
   { icon: '✦',  label: 'Lumina',  href: '/lumina' },
   { icon: '📚', label: 'Library', href: '/library' },
+  { icon: '🎧', label: 'Audio',   href: '/audiobooks' },
   { icon: '📖', label: 'Journal', href: '/journal' },
   { icon: '🤍', label: 'You',     href: '/you' },
 ]
