@@ -41,12 +41,12 @@ const PLAYLIST_CARDS = [
 ]
 
 const AMBIENT_PRESETS = [
-  { id: 'rain',   label: 'Rain',        emoji: '🌧️', color: 'rgba(99,102,241,0.5)'  },
-  { id: 'ocean',  label: 'Ocean',       emoji: '🌊', color: 'rgba(14,165,233,0.5)'  },
-  { id: 'forest', label: 'Forest',      emoji: '🌲', color: 'rgba(34,197,94,0.5)'   },
-  { id: 'space',  label: 'Deep Space',  emoji: '🌌', color: 'rgba(139,92,246,0.5)'  },
-  { id: 'noise',  label: 'Brown Noise', emoji: '🤎', color: 'rgba(180,120,60,0.5)'  },
-  { id: 'cafe',   label: 'Café',        emoji: '☕', color: 'rgba(217,119,6,0.5)'   },
+  { id: 'rain',   label: 'Rain',        emoji: '🌧️', color: 'rgba(99,102,241,0.5)',  ytId: 'mPZkdNFkNps' },
+  { id: 'ocean',  label: 'Ocean',       emoji: '🌊', color: 'rgba(14,165,233,0.5)',  ytId: 'Nep1qytq9JM' },
+  { id: 'forest', label: 'Forest',      emoji: '🌲', color: 'rgba(34,197,94,0.5)',   ytId: 'xNN7iTA57jM' },
+  { id: 'space',  label: 'Deep Space',  emoji: '🌌', color: 'rgba(139,92,246,0.5)',  ytId: 'Cea8YLonqBk' },
+  { id: 'noise',  label: 'Brown Noise', emoji: '🤎', color: 'rgba(180,120,60,0.5)',  ytId: 'RqzGzwTY-6w' },
+  { id: 'cafe',   label: 'Café',        emoji: '☕', color: 'rgba(217,119,6,0.5)',   ytId: 'MYPVQccHhAQ' },
 ]
 
 // ============================================================
@@ -152,6 +152,7 @@ export default function MusicPage() {
   const widgetRef = useRef<any>(null)
   const ambientRef = useRef<AmbientEngine|null>(null)
   const progressTimer = useRef<ReturnType<typeof setInterval>|null>(null)
+  const ytRefs = useRef<Record<string, HTMLIFrameElement|null>>({})
 
   // Load SC Widget API + init ambient engine
   useEffect(() => {
@@ -219,15 +220,34 @@ export default function MusicPage() {
     widgetRef.current?.setVolume(v * 100)
   }, [])
 
-  const handleAmbient = useCallback(async (id: string) => {
-    if (!ambientRef.current) return
-    if (activeAmbient === id) { ambientRef.current.stop(); setActiveAmbient(null) }
-    else { await ambientRef.current.play(id, ambientVol); setActiveAmbient(id) }
+  const postToYT = (id: string, cmd: object) => {
+    const iframe = ytRefs.current[id]
+    if (iframe?.contentWindow) {
+      iframe.contentWindow.postMessage(JSON.stringify(cmd), '*')
+    }
+  }
+
+  const handleAmbient = useCallback((id: string) => {
+    if (activeAmbient === id) {
+      // Pause current
+      postToYT(id, { event: 'command', func: 'pauseVideo', args: [] })
+      setActiveAmbient(null)
+    } else {
+      // Pause previous if any
+      if (activeAmbient) postToYT(activeAmbient, { event: 'command', func: 'pauseVideo', args: [] })
+      // Play new — slight delay to ensure iframe is ready
+      setTimeout(() => {
+        postToYT(id, { event: 'command', func: 'playVideo', args: [] })
+        postToYT(id, { event: 'command', func: 'setVolume', args: [Math.round(ambientVol * 100)] })
+      }, 300)
+      setActiveAmbient(id)
+    }
   }, [activeAmbient, ambientVol])
 
   const handleAmbientVol = useCallback((v: number) => {
-    setAmbientVol(v); ambientRef.current?.setVolume(v)
-  }, [])
+    setAmbientVol(v)
+    if (activeAmbient) postToYT(activeAmbient, { event: 'command', func: 'setVolume', args: [Math.round(v * 100)] })
+  }, [activeAmbient])
 
   const filtered = moodFilter === 'all' ? PLAYLIST_CARDS : PLAYLIST_CARDS.filter(p => p.moods.includes(moodFilter))
 
@@ -411,10 +431,23 @@ export default function MusicPage() {
           </>
         ) : (
           <div className="amb">
+            {/* Hidden YouTube iframes — one per preset, loaded once, controlled via postMessage */}
+            <div style={{position:'absolute',width:0,height:0,overflow:'hidden',pointerEvents:'none',opacity:0}}>
+              {AMBIENT_PRESETS.map(p => (
+                <iframe
+                  key={p.id}
+                  ref={el => { ytRefs.current[p.id] = el }}
+                  src={`https://www.youtube.com/embed/${p.ytId}?enablejsapi=1&loop=1&playlist=${p.ytId}&autoplay=0&controls=0&mute=0`}
+                  allow="autoplay"
+                  title={p.label}
+                />
+              ))}
+            </div>
+
             <div className="amb-hdr">
               <div>
                 <p className="amb-title">Ambient Sounds</p>
-                <p className="amb-sub">Synthesized in your browser · no downloads needed</p>
+                <p className="amb-sub">Real sounds from YouTube · tap to play</p>
               </div>
             </div>
             <div className="amb-grid">
@@ -439,7 +472,7 @@ export default function MusicPage() {
                 <span className="vol-lbl" style={{fontSize:10,color:'rgba(255,255,255,.3)'}}>🔊</span>
               </div>
             )}
-            {!activeAmbient && <p className="amb-tip">Tap a sound to start · works offline</p>}
+            {!activeAmbient && <p className="amb-tip">Tap a sound to start playing</p>}
           </div>
         )}
       </div>
