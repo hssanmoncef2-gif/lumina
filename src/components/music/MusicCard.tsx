@@ -10,7 +10,7 @@ const MOOD_TRACKS: Record<string, { title: string; category: string; emoji: stri
   soft:     { title: 'Cherry Blossom Rain',  category: 'Soft dreamscape · gentle',    emoji: '🌸', gradient: 'linear-gradient(135deg, rgba(236,72,153,0.20), rgba(139,92,246,0.16))',  ytId: 'mPZkdNFkNps' },
   alive:    { title: 'Electric Dawn',        category: 'Motivation · uplifting',      emoji: '⚡', gradient: 'linear-gradient(135deg, rgba(34,197,94,0.20), rgba(59,130,246,0.16))',   ytId: 'xNN7iTA57jM' },
   heavy:    { title: 'Let It Rain',          category: 'Emotional release · healing', emoji: '🌧️', gradient: 'linear-gradient(135deg, rgba(99,102,241,0.22), rgba(139,92,246,0.18))', ytId: 'mPZkdNFkNps' },
-  anxious:  { title: 'Brown Noise Flow',     category: 'Grounding · focus',           emoji: '🤎', gradient: 'linear-gradient(135deg, rgba(120,80,50,0.22), rgba(99,102,241,0.16))',   ytId: 'RqzGzwTY-6w' },
+  anxious:  { title: 'Calm Anxiety Mix',     category: 'Grounding · soothing',        emoji: '🤎', gradient: 'linear-gradient(135deg, rgba(120,80,50,0.22), rgba(99,102,241,0.16))',   ytId: 'flGJj6d1Q9M' },
   default:  { title: 'Soft Cloudscape',      category: 'Dreamy ambient · comfort',    emoji: '☁️', gradient: 'linear-gradient(135deg, rgba(139,92,246,0.22), rgba(59,130,246,0.16))',  ytId: 'Nep1qytq9JM' },
 }
 
