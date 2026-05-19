@@ -56,18 +56,18 @@ const AUDIOBOOKS = [
     genre: 'fiction',
     desc: 'A timeless story about love, loss and what matters.',
     grad: 'linear-gradient(135deg,rgba(99,102,241,0.55) 0%,rgba(139,92,246,0.5) 100%)',
-    ytId: 'IfNKMzFMkSA',
+    ytId: 'xC_EFBo2Psw',
   },
   {
     id: 'meditations',
     title: 'Meditations',
     author: 'Marcus Aurelius',
-    duration: '4h 10m',
+    duration: '5h 58m',
     emoji: '🔮',
     genre: 'philosophy',
     desc: 'Private notes of a Roman emperor on stoic philosophy.',
     grad: 'linear-gradient(135deg,rgba(79,70,229,0.6) 0%,rgba(30,27,75,0.75) 100%)',
-    ytId: 'd5E2AQKuCyU',
+    ytId: 'WRZVbsH9OV0',
   },
   {
     id: 'power-now',
@@ -78,7 +78,7 @@ const AUDIOBOOKS = [
     genre: 'selfhelp',
     desc: 'A guide to spiritual enlightenment and presence.',
     grad: 'linear-gradient(135deg,rgba(34,197,94,0.5) 0%,rgba(6,182,212,0.45) 100%)',
-    ytId: 'OFDtdHpYvhw',
+    ytId: 'XG3EqKNjgDU',
   },
   {
     id: 'atomic-habits',
@@ -89,7 +89,7 @@ const AUDIOBOOKS = [
     genre: 'selfhelp',
     desc: 'Tiny changes, remarkable results.',
     grad: 'linear-gradient(135deg,rgba(234,179,8,0.55) 0%,rgba(249,115,22,0.5) 100%)',
-    ytId: 'PRl0oEeqiX4',
+    ytId: 'ytZpg9e17r4',
   },
   {
     id: 'pride-prejudice',
@@ -100,7 +100,7 @@ const AUDIOBOOKS = [
     genre: 'romance',
     desc: 'The timeless love story of Elizabeth Bennet.',
     grad: 'linear-gradient(135deg,rgba(236,72,153,0.5) 0%,rgba(196,181,253,0.5) 100%)',
-    ytId: 'ym_ozKwDlUk',
+    ytId: 'eVHu5-n69qQ',
   },
   {
     id: 'sherlock',
@@ -111,7 +111,7 @@ const AUDIOBOOKS = [
     genre: 'mystery',
     desc: "The complete adventures of the world's greatest detective.",
     grad: 'linear-gradient(135deg,rgba(55,65,81,0.7) 0%,rgba(17,24,39,0.8) 100%)',
-    ytId: 'Xe3OW1AAAU8',
+    ytId: 'wp_6Jg5pLYc',
   },
   {
     id: 'sapiens',
@@ -122,7 +122,7 @@ const AUDIOBOOKS = [
     genre: 'biography',
     desc: 'A brief history of humankind.',
     grad: 'linear-gradient(135deg,rgba(14,165,233,0.5) 0%,rgba(99,102,241,0.5) 100%)',
-    ytId: 'krizTCUVFhQ',
+    ytId: 'HvPJaIvJhDc',
   },
   {
     id: 'dune',
@@ -144,7 +144,7 @@ const AUDIOBOOKS = [
     genre: 'philosophy',
     desc: 'Ancient wisdom on the nature of existence and living simply.',
     grad: 'linear-gradient(135deg,rgba(20,184,166,0.5) 0%,rgba(79,70,229,0.5) 100%)',
-    ytId: 'jp6jDFNfRqw',
+    ytId: '8EnPgi6Zpr8',
   },
   {
     id: 'gone-girl',
@@ -155,7 +155,7 @@ const AUDIOBOOKS = [
     genre: 'mystery',
     desc: 'A gripping psychological thriller about marriage and deception.',
     grad: 'linear-gradient(135deg,rgba(30,27,75,0.75) 0%,rgba(88,28,135,0.6) 100%)',
-    ytId: 'IofJpnvp-5A',
+    ytId: 'va-1RIw-2Gg',
   },
   {
     id: 'notebook',
@@ -166,7 +166,7 @@ const AUDIOBOOKS = [
     genre: 'romance',
     desc: 'A tender story of love that endures across time.',
     grad: 'linear-gradient(135deg,rgba(244,114,182,0.5) 0%,rgba(251,191,36,0.4) 100%)',
-    ytId: 'cAdmSHF9nS0',
+    ytId: 'MNFnyambtsE',
   },
 ]
 
