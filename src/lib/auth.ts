@@ -1,6 +1,5 @@
 // ============================================================
 // LUMINA — Auth helpers (NextAuth)
-// Replaces the old Supabase auth.ts
 // ============================================================
 
 import { signIn, signOut as nextAuthSignOut } from 'next-auth/react'
@@ -49,12 +48,22 @@ export async function signUpWithEmail(
 }
 
 // ---- Sign out ----
+// Bumps sessionVersion in DB first → invalidates ALL devices/sessions,
+// then clears the local JWT cookie.
 export async function signOut() {
   try { localStorage.removeItem('lumina_onboarding_done') } catch {}
+
+  // Tell the server to invalidate all sessions for this user
+  try {
+    await fetch('/api/auth/logout', { method: 'POST' })
+  } catch {
+    // Non-fatal — JWT will still expire via maxAge
+  }
+
   await nextAuthSignOut({ callbackUrl: '/auth/login' })
 }
 
-// ---- signInWithMagicLink — stub (not supported without email provider) ----
+// ---- signInWithMagicLink — stub ----
 export async function signInWithMagicLink(_email: string) {
   return { error: { message: 'Magic link is not available. Please use email + password.' } }
 }
@@ -66,8 +75,8 @@ export async function getUser() {
   const session = await getSession()
   if (!session?.user) return null
   return {
-    id: (session.user as any).id as string,
+    id:    (session.user as any).id as string,
     email: session.user.email ?? '',
-    name: session.user.name ?? '',
+    name:  session.user.name ?? '',
   }
 }
