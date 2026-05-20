@@ -37,6 +37,17 @@ const GENRE_FILTERS = [
 
 const AUDIOBOOKS = [
   {
+  id: 'all-tomorrows',
+  title: 'All Tomorrows',
+  author: 'Nemo Ramjet',
+  duration: '',
+  emoji: '🌌',
+  genre: 'scifi',
+  desc: 'A haunting journey through the far future of humanity.',
+  grad: 'linear-gradient(135deg,rgba(99,102,241,0.5) 0%,rgba(16,185,129,0.4) 100%)',
+  ytId: 'YbuulUQzHRU',
+ },
+  {
     id: 'alchemist',
     title: 'The Alchemist',
     author: 'Paulo Coelho',
