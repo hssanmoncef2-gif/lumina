@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import BottomNav from '@/components/layout/BottomNav'
 
 // ============================================================
 // SoundCloud Widget API types
@@ -477,22 +478,7 @@ export default function MusicPage() {
         )}
       </div>
 
-      <nav className="nav">
-        {[
-          {icon:'🏠',label:'Home',href:'/home'},
-          {icon:'🎵',label:'Music',href:'/music'},
-          {icon:'✦',label:'Lumina',href:'/lumina'},
-          {icon:'📚',label:'Library',href:'/library'},
-          {icon:'📖',label:'Journal',href:'/journal'},
-          {icon:'🤍',label:'You',href:'/you'},
-        ].map(t => (
-          <button key={t.href} className={`nav-btn${t.href==='/music'?' on':''}`}
-            onClick={() => router.push(t.href as any)}>
-            <span className="nav-ico">{t.icon}</span>
-            <span className="nav-lbl" style={{color:t.href==='/music'?'rgba(196,181,253,.8)':'rgba(255,255,255,.3)'}}>{t.label}</span>
-          </button>
-        ))}
-      </nav>
+      <BottomNav />
     </>
   )
 }

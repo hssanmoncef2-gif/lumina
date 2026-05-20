@@ -9,6 +9,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import BreathingGuide from '@/components/comfort/BreathingGuide'
+import BottomNav from '@/components/layout/BottomNav'
 
 const AFFIRMATIONS = [
   'You are safe in this moment.',
@@ -185,6 +186,7 @@ export default function ComfortPage() {
           </div>
         </motion.div>
       </div>
+      <BottomNav />
     </main>
   )
 }

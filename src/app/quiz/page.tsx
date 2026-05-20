@@ -15,6 +15,7 @@ import MoodQuiz from '@/components/mood/MoodQuiz'
 import { getUser } from '@/lib/auth'
 import { useLuminaStore } from '@/store/useAppStore'
 import type { QuizResult, MoodId } from '@/types'
+import BottomNav from '@/components/layout/BottomNav'
 
 const MOOD_GRADIENTS: Record<MoodId, string> = {
   calm:     'rgba(14,165,233,0.3)',
@@ -375,6 +376,7 @@ export default function QuizPage() {
           </AnimatePresence>
         </div>
       </div>
+      <BottomNav />
     </main>
   )
 }
