@@ -122,7 +122,7 @@ const AUDIOBOOKS = [
     genre: 'biography',
     desc: 'A brief history of humankind.',
     grad: 'linear-gradient(135deg,rgba(14,165,233,0.5) 0%,rgba(99,102,241,0.5) 100%)',
-    ytId: 'HvPJaIvJhDc',
+    ytId: 'UkbQ4eEcppw',
   },
   {
     id: 'dune',
@@ -144,7 +144,7 @@ const AUDIOBOOKS = [
     genre: 'philosophy',
     desc: 'Ancient wisdom on the nature of existence and living simply.',
     grad: 'linear-gradient(135deg,rgba(20,184,166,0.5) 0%,rgba(79,70,229,0.5) 100%)',
-    ytId: '8EnPgi6Zpr8',
+    ytId: 'bhzP0WFA8Wk',
   },
   {
     id: 'gone-girl',
