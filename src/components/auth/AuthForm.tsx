@@ -35,14 +35,14 @@ export default function AuthForm({ mode, onSuccess }: AuthFormProps) {
         const { error: err } = await signInWithEmail(email, password)
         if (err) throw err
         onSuccess?.()
-        window.location.href = '/home'
+        window.location.href = '/'
       } else {
         if (!password) { setError('Please create a password.'); setLoading(false); return }
         if (password.length < 8) { setError('Password must be at least 8 characters.'); setLoading(false); return }
         const { error: err } = await signUpWithEmail(email, password, displayName)
         if (err) throw err
         onSuccess?.()
-        window.location.href = '/onboarding'
+        window.location.href = '/'
       }
     } catch (err: any) {
       setError(err?.message ?? 'Something went wrong. Please try again.')
