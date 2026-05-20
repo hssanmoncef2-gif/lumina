@@ -52,7 +52,7 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
     if (isLast) {
       setOnboardingComplete(true)
       onComplete?.()
-      window.location.href = '/'
+      window.location.href = '/home'
     } else {
       setStep((s) => s + 1)
     }

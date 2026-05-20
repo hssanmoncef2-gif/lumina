@@ -31,7 +31,7 @@ export default function LoginPage() {
       email, password, redirect: false,
     });
     if (res?.ok) {
-      router.push('/home');
+      window.location.href = '/home';
     } else {
       setError('Invalid email or password.');
       setLoading(false);

@@ -1,7 +1,22 @@
-import { redirect } from 'next/navigation'
+'use client'
 
-// Root always redirects to login.
-// The middleware will forward authenticated users to /home from there.
+import { useEffect } from 'react'
+import { useSession } from 'next-auth/react'
+
+// Root page: session-aware redirect.
+// - Authenticated  → /home
+// - Unauthenticated → /auth/login
 export default function RootPage() {
-  redirect('/auth/login')
+  const { data: session, status } = useSession()
+
+  useEffect(() => {
+    if (status === 'loading') return
+    if (session?.user) {
+      window.location.replace('/home')
+    } else {
+      window.location.replace('/auth/login')
+    }
+  }, [session, status])
+
+  return null
 }
